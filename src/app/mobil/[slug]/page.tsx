@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Metadata } from "next";
 import { CTASection } from "./cta-section";
-import { SubNav } from "./sub-nav";
+import { SubNavFixed as SubNav } from "./sub-nav";
 
 type Props = {
     params: Promise<{ slug: string }>

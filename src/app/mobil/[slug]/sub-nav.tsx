@@ -8,7 +8,7 @@ interface SubNavProps {
     whatsappNumber: string;
 }
 
-export function SubNav({ carName, whatsappNumber }: SubNavProps) {
+export function SubNavFixed({ carName, whatsappNumber }: SubNavProps) {
     const handleContactSpecialist = () => {
         const message = `Halo, saya butuh bantuan spesialis untuk unit *${carName}*.`;
         window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`, "_blank");
