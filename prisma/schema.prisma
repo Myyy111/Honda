@@ -1,0 +1,99 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// NOTE: Change to "postgresql" and update DATABASE_URL in .env when ready to deploy
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Car {
+  id           String       @id @default(cuid())
+  name         String
+  slug         String       @unique
+  brand        String       @default("Honda")
+  price        Float        // Starting OTR Price
+  status       String       @default("Ready Stock") // Ready / Indent
+  badge        String?      // New / Promo / Best Seller
+  thumbnail    String
+  gallery      String       // Store as JSON string since SQLite doesn't support arrays
+  videoUrl     String?      // YouTube Link
+  catalogUrl   String?      // E-Katalog Link (e.g., Google Drive)
+  description  String       // Rich Text
+  specs        String?      // JSON string for specs
+  colors       String?      // JSON string for color list
+  isActive     Boolean      @default(true)
+  isFeatured   Boolean      @default(false)
+  variants     CarVariant[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model CarVariant {
+  id      String @id @default(cuid())
+  carId   String
+  name    String // e.g., 1.5 Turbo RS
+  price   Float  // Variant OTR Price
+  car     Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+}
+
+model Promotion {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  image       String
+  link        String?
+  tag         String?  @default("PROMO")
+  period      String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Sales {
+  id        String  @id @default(cuid())
+  name      String
+  photo     String
+  whatsapp  String
+  isActive  Boolean @default(true)
+}
+
+model LeadLog {
+  id        String   @id @default(cuid())
+  carId     String?
+  salesId   String?
+  type      String   @default("WHATSAPP_CLICK")
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String?  // JSON or Markdown
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  image     String
+  name      String?
+  text      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
