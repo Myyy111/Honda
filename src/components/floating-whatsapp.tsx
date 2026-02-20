@@ -4,13 +4,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 export function FloatingWhatsApp({ number, siteName }: { number?: string; siteName?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [showLabel, setShowLabel] = useState(false);
 
     const whatsappNumber = number || "6285863162206";
-    const cleanedNumber = whatsappNumber.replace(/[^0-9]/g, "");
+    const cleanedNumber = cleanPhoneNumber(whatsappNumber);
 
     useEffect(() => {
         // Show label after 3 seconds

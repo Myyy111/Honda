@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { logLead } from "@/actions/leads";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface StickyBottomBarProps {
     carId: string;
@@ -41,7 +42,7 @@ export function StickyBottomBar({ carId, carName, carPrice, whatsappNumber }: St
         } catch (e) { }
 
         const message = `Halo, saya tertarik dengan unit *${carName}*. ${extraMsg}`;
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`, "_blank");
+        window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${encodeURIComponent(message)}`, "_blank");
     };
 
     return (

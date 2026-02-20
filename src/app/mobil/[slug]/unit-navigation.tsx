@@ -2,6 +2,7 @@
 
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface UnitNavigationProps {
     carName: string;
@@ -11,7 +12,7 @@ interface UnitNavigationProps {
 export function UnitNavigation({ carName, whatsappNumber }: UnitNavigationProps) {
     const handleContactSpecialist = () => {
         const message = `Halo, saya butuh bantuan spesialis untuk unit *${carName}*.`;
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`, "_blank");
+        window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${encodeURIComponent(message)}`, "_blank");
     };
 
     return (

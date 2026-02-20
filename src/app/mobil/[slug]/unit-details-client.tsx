@@ -198,43 +198,50 @@ export function UnitDetailsClient({
                                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600 text-white text-xs font-black italic">1</span>
                                 <h2 className="text-xs font-black uppercase tracking-[0.4em] text-red-600">Pilih Varian</h2>
                             </div>
-                            <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">
+                            <h3 className="text-2xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-tight">
                                 TIPE <span className="text-slate-400">&</span> PERFORMA
                             </h3>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
                         {variants.map((v) => (
                             <button
                                 key={v.id}
                                 onClick={() => setSelectedVariant(v)}
-                                className={`relative p-8 rounded-[2rem] border-2 transition-all text-left group overflow-hidden ${selectedVariant?.id === v.id
-                                    ? "border-red-600 bg-white shadow-2xl shadow-red-600/10"
+                                className={`relative p-3.5 md:p-8 rounded-2xl md:rounded-[2rem] border-2 transition-all text-left group overflow-hidden flex flex-col justify-between min-h-[90px] md:min-h-0 ${selectedVariant?.id === v.id
+                                    ? "border-red-600 bg-white shadow-xl shadow-red-600/5"
                                     : "border-slate-100 bg-white hover:border-slate-200"
                                     }`}
                             >
                                 {selectedVariant?.id === v.id && (
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-red-600/5 blur-3xl -mr-12 -mt-12" />
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-red-600/5 blur-2xl -mr-8 -mt-8" />
                                 )}
-                                <div className={`mb-6 p-3 rounded-2xl w-fit transition-colors ${selectedVariant?.id === v.id ? "bg-red-600 text-white" : "bg-slate-50 text-slate-400"}`}>
-                                    <ChevronRight className="w-5 h-5" />
+
+                                <div className="relative z-10 flex flex-col h-full justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <h4 className={`text-[9px] md:text-xl font-black uppercase tracking-tight leading-tight line-clamp-2 ${selectedVariant?.id === v.id ? "text-slate-900" : "text-slate-500"}`}>
+                                            {v.name}
+                                        </h4>
+                                        <p className="hidden md:block text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 mb-2">Estimasi Harga OTR</p>
+                                    </div>
+
+                                    <div className="flex items-baseline gap-0.5">
+                                        <p className={`text-[11px] md:text-2xl font-black tracking-tighter ${selectedVariant?.id === v.id ? "text-red-600" : "text-slate-900"}`}>
+                                            {formatPrice(v.price)}
+                                        </p>
+                                        <span className="text-[8px] font-bold text-slate-300">*</span>
+                                    </div>
                                 </div>
-                                <h4 className={`text-xl font-black uppercase tracking-tight mb-2 ${selectedVariant?.id === v.id ? "text-slate-900" : "text-slate-500"}`}>
-                                    {v.name}
-                                </h4>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Estimasi Harga OTR</p>
-                                <div className="flex items-baseline gap-1">
-                                    <p className={`text-2xl font-black tracking-tighter ${selectedVariant?.id === v.id ? "text-red-600" : "text-slate-900"}`}>
-                                        {formatPrice(v.price)}
-                                    </p>
-                                    <span className="text-xs font-bold text-slate-300">*</span>
+
+                                <div className="hidden md:flex absolute top-8 right-8 p-3 rounded-2xl bg-slate-50 text-slate-400 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                                    <ChevronRight className="w-5 h-5" />
                                 </div>
 
                                 {selectedVariant?.id === v.id && (
                                     <motion.div
                                         layoutId="variant-indicator"
-                                        className="absolute bottom-0 left-0 right-0 h-1.5 bg-red-600"
+                                        className="absolute bottom-0 left-0 right-0 h-1 bg-red-600"
                                     />
                                 )}
                             </button>
@@ -243,20 +250,20 @@ export function UnitDetailsClient({
                 </section>
 
                 {/* Simple Specs Section - Compact Version */}
-                <section id="spesifikasi" className="py-12 bg-slate-50/50 border-y border-slate-100 font-sans">
+                <section id="spesifikasi" className="py-8 bg-slate-50/50 border-y border-slate-100 font-sans">
                     <div className="container mx-auto px-6">
                         <div className="max-w-4xl mx-auto">
-                            <div className="mb-8 text-center">
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <ShieldCheck className="h-5 w-5 text-red-600" />
-                                    <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Spesifikasi Teknis</span>
+                            <div className="mb-6 text-center px-4">
+                                <div className="flex items-center justify-center gap-2 mb-1.5">
+                                    <ShieldCheck className="h-4 w-4 text-red-600" />
+                                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">Spesifikasi Teknis</span>
                                 </div>
-                                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-slate-900">
+                                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-900 leading-tight">
                                     {selectedVariant?.name || "Detail Unit"}
                                 </h2>
                             </div>
 
-                            <div className="bg-white p-6 md:p-10 rounded-[2.5rem] border border-slate-200 shadow-xl relative overflow-hidden">
+                            <div className="bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-200 shadow-xl relative overflow-hidden mx-4 md:mx-0">
                                 {(() => {
                                     const rawSpecs = selectedVariant?.specs;
                                     if (!rawSpecs) return (
@@ -286,11 +293,11 @@ export function UnitDetailsClient({
                                     );
 
                                     return (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1">
                                             {lines.map((line, idx) => (
-                                                <div key={idx} className="flex items-start gap-3 py-2 border-b border-slate-50 group hover:bg-slate-50/50 transition-colors rounded-lg px-2 -mx-2">
-                                                    <CheckCircle2 className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
-                                                    <p className="text-sm font-medium text-slate-700 leading-relaxed">
+                                                <div key={idx} className="flex items-start gap-2.5 py-1 border-b border-slate-50 group hover:bg-slate-50/30 transition-colors rounded-lg px-2 -mx-2">
+                                                    <CheckCircle2 className="h-3.5 w-3.5 text-red-600 shrink-0 mt-0.5" />
+                                                    <p className="text-[12px] md:text-[13px] font-medium text-slate-700 leading-snug">
                                                         {line.replace(/^-\s*/, '').replace(/^\*\s*/, '')}
                                                     </p>
                                                 </div>
@@ -304,14 +311,14 @@ export function UnitDetailsClient({
                 </section>
 
                 {/* Step 2: Color Selection */}
-                <section className="container mx-auto px-6 pb-24">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <section className="container mx-auto px-6 pb-16">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-16 gap-6">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600 text-white text-xs font-black italic">2</span>
                                 <h2 className="text-xs font-black uppercase tracking-[0.4em] text-red-600">Pilih Warna</h2>
                             </div>
-                            <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">
+                            <h3 className="text-2xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-tight">
                                 EKSPRESI <span className="text-slate-400">&</span> GAYA
                             </h3>
                         </div>
@@ -333,25 +340,25 @@ export function UnitDetailsClient({
                                     exit={{ opacity: 0, scale: 0.9 }}
                                     transition={{ duration: 0.4 }}
                                     onClick={() => setSelectedColor(c)}
-                                    className={`min-w-[340px] md:min-w-[450px] rounded-[3rem] border-2 transition-all duration-500 overflow-hidden shrink-0 group bg-white snap-center relative ${selectedColor?.name === c.name
+                                    className={`min-w-[280px] md:min-w-[450px] rounded-[2.5rem] md:rounded-[3rem] border-2 transition-all duration-500 overflow-hidden shrink-0 group bg-white snap-center relative ${selectedColor?.name === c.name
                                         ? "border-red-600 shadow-2xl shadow-red-600/10 scale-[1.02]"
                                         : "border-slate-100/50 hover:border-slate-200"
                                         }`}
                                 >
-                                    <div className="aspect-[16/10] relative p-12">
+                                    <div className="aspect-[16/10] relative p-6 md:p-12">
                                         <Image
                                             src={c.image}
                                             alt={c.name}
                                             fill
-                                            className="object-contain p-8 group-hover:scale-110 transition-transform duration-1000 ease-out"
+                                            className="object-contain p-10 md:p-12 group-hover:scale-110 transition-transform duration-1000 ease-out"
                                         />
                                         {c.hex && (
-                                            <div className="absolute top-8 left-8 w-12 h-12 rounded-2xl border-2 border-white shadow-xl flex items-center justify-center overflow-hidden">
+                                            <div className="absolute top-4 left-4 md:top-8 md:left-8 w-10 h-10 md:w-12 md:h-12 rounded-2xl border-2 border-white shadow-xl flex items-center justify-center overflow-hidden">
                                                 <div className="w-full h-full" style={{ backgroundColor: c.hex }} />
                                             </div>
                                         )}
                                     </div>
-                                    <div className={`p-10 border-t transition-all duration-500 ${selectedColor?.name === c.name ? "bg-slate-900 border-slate-900" : "bg-white border-slate-100"}`}>
+                                    <div className={`p-6 md:p-10 border-t transition-all duration-500 ${selectedColor?.name === c.name ? "bg-slate-900 border-slate-900" : "bg-white border-slate-100"}`}>
                                         <h4 className={`text-lg md:text-xl font-black uppercase tracking-tight text-center ${selectedColor?.name === c.name ? "text-white" : "text-slate-900"}`}>
                                             {c.name}
                                         </h4>

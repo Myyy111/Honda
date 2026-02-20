@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Image as ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, cleanPhoneNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface Car {
@@ -29,7 +29,7 @@ export function CarCard({ car, viewMode = "grid", whatsappNumber = "628586316220
     const bgColor = "bg-[#CC0000]";
 
     const whatsappMessage = encodeURIComponent(`Halo, saya tertarik dengan unit ${car.name}. Bisa bantu info selengkapnya?`);
-    const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
+    const whatsappLink = `https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${whatsappMessage}`;
 
     return (
         <div className={cn(
@@ -58,14 +58,14 @@ export function CarCard({ car, viewMode = "grid", whatsappNumber = "628586316220
 
                 {/* Badge Overlay */}
                 <div className="absolute top-2 left-2 z-20">
-                    <span className="bg-black/90 text-white px-1.5 py-0.5 rounded-sm text-[7px] font-bold uppercase tracking-wider">
+                    <span className="bg-black/90 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider">
                         {car.badge || "Ready Stock"}
                     </span>
                 </div>
 
                 {/* Bottom Gradient - Conditional display */}
                 <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/60 to-transparent hidden md:flex items-end p-2">
-                    <p className="text-[7px] text-white/90 font-medium tracking-tight">
+                    <p className="text-[10px] text-white/90 font-medium tracking-tight">
                         As shown: {formattedPrice}*
                     </p>
                 </div>
@@ -87,19 +87,19 @@ export function CarCard({ car, viewMode = "grid", whatsappNumber = "628586316220
 
                     <div>
                         <p className="text-xl md:text-2xl font-black tracking-tighter">{formattedPrice}</p>
-                        <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Starting OTR *</p>
+                        <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Starting OTR *</p>
                     </div>
                 </div>
 
                 {/* Actions: Compact Buttons */}
                 <div className="mt-6 flex items-center gap-3">
                     <Link href={`/mobil/${car.slug}`}>
-                        <Button className="px-8 bg-white text-[#CC0000] hover:bg-slate-100 h-11 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-black/10 transition-all active:scale-95">
+                        <Button className="px-8 bg-white text-[#CC0000] hover:bg-slate-100 h-11 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-black/10 transition-all active:scale-95">
                             Details
                         </Button>
                     </Link>
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="h-11 px-4 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center group/btn hover:bg-black/30 transition-all">
-                        <span className="font-bold text-[9px] text-white uppercase tracking-widest mr-2">Beli</span>
+                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="h-11 px-6 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center group/btn hover:bg-black/30 transition-all">
+                        <span className="font-bold text-[11px] text-white uppercase tracking-widest mr-2">Beli</span>
                         <ChevronRight className="h-4 w-4 text-white group-hover:translate-x-1 transition-transform" />
                     </a>
                 </div>

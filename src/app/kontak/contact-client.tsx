@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { motion, Variants } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, cleanPhoneNumber } from "@/lib/utils";
 import { useState } from "react";
 import { logLead } from "@/actions/leads";
 import Link from "next/link";
@@ -50,7 +50,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
         }
 
         const text = `*New Website Inquiry*\n\nNama: ${name}\nNo HP: ${phone || "-"}\nPesan: ${message}`;
-        const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+        const url = `https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${encodeURIComponent(text)}`;
 
         // Log the lead
         logLead({ type: "CONTACT_FORM_SUBMISSION" });
@@ -61,7 +61,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
 
     const handleInstantWhatsApp = () => {
         const text = `Halo ${contactName}, saya ingin informasi lebih lanjut mengenai unit Honda terbaru.`;
-        const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+        const url = `https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${encodeURIComponent(text)}`;
 
         logLead({ type: "CONTACT_INSTANT_WA" });
         window.open(url, "_blank");
@@ -155,7 +155,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
 
                             <div className="space-y-10">
                                 {[
-                                    { icon: Phone, label: "Direct Call", val: whatsappNumber, color: "text-slate-900 hover:text-red-600", bg: "bg-slate-50", action: () => window.open(`tel:${whatsappNumber}`) },
+                                    { icon: Phone, label: "Direct Call", val: whatsappNumber, color: "text-slate-900 hover:text-red-600", bg: "bg-slate-50", action: () => window.open(`tel:${cleanPhoneNumber(whatsappNumber)}`) },
                                     { icon: Mail, label: "Official Email", val: email, color: "text-slate-900 hover:text-red-600", bg: "bg-slate-50", action: () => window.open(`mailto:${email}`) },
                                     { icon: MessageCircle, label: "Live WhatsApp", val: "Chat Now", color: "text-green-600 hover:text-green-700", bg: "bg-green-50/50", action: handleInstantWhatsApp }
                                 ].map((item, i) => (

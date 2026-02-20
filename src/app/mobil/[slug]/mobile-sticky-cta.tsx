@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { calculateCredit, formatIDR } from "@/lib/credit-utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface MobileStickyCTAProps {
     carName: string;
@@ -33,7 +34,7 @@ export function MobileStickyCTA({ carName, carPrice, whatsappNumber }: MobileSti
 
     const handleWhatsApp = () => {
         const message = encodeURIComponent(`Halo, saya tertarik dengan unit ${carName}. Bisa bantu info simulasinya?`);
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${message}`, "_blank");
+        window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${message}`, "_blank");
     };
 
     if (!isVisible) return null;

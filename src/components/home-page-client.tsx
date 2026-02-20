@@ -11,6 +11,7 @@ import { motion, Variants } from "framer-motion";
 import type { Car, Testimonial, Promotion } from "@/types";
 import { PromoPopup } from "@/components/promo-popup";
 import { VideoSection } from "@/components/video-section";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface HomePageClientProps {
     featuredCars: Car[];
@@ -548,7 +549,7 @@ export default function HomePageClient({ featuredCars, settings, testimonials, p
                                         <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3 text-justify flex-1">
                                             {promo.description}
                                         </p>
-                                        <Link href={promo.link || `https://wa.me/${settings?.whatsapp_number}?text=Halo, saya tertarik dengan promo: ${promo.title}`} target="_blank" className="mt-auto">
+                                        <Link href={promo.link || `https://wa.me/${cleanPhoneNumber(settings?.whatsapp_number || "")}?text=Halo, saya tertarik dengan promo: ${promo.title}`} target="_blank" className="mt-auto">
                                             <Button className="w-full bg-slate-200 hover:bg-slate-900 text-slate-900 hover:text-white font-bold h-12 rounded-xl transition-all duration-300">
                                                 Dapatkan Promo Ini
                                             </Button>
@@ -591,7 +592,7 @@ export default function HomePageClient({ featuredCars, settings, testimonials, p
                                 {settings?.cta_description || "Tim spesialis kami siap membantu menghitungkan skema kredit terbaik yang sesuai dengan budget Anda. Konsultasi gratis tanpa syarat."}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link href={`https://wa.me/${settings?.whatsapp_number || "6285863162206"}`} target="_blank">
+                                <Link href={`https://wa.me/${cleanPhoneNumber(settings?.whatsapp_number || "6285863162206")}`} target="_blank">
                                     <Button className="bg-red-600 hover:bg-red-700 text-white h-14 px-10 rounded-full font-bold text-sm tracking-widest transition-all shadow-lg shadow-red-600/20 w-full sm:w-auto">
                                         {settings?.cta_button_primary || "Hubungi Sales"}
                                     </Button>

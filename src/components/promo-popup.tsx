@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import { X, ExternalLink, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Promotion } from "@/types";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface PromoPopupProps {
     promotions: Promotion[];
@@ -42,11 +43,15 @@ export function PromoPopup({ promotions, whatsappNumber }: PromoPopupProps) {
     if (!currentPromo) return null;
 
     // Sanitize whatsapp number
-    const whatsapp = whatsappNumber?.replace(/[^0-9]/g, '') || "6285863162206";
+    const whatsapp = cleanPhoneNumber(whatsappNumber || "6285863162206");
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent showCloseButton={false} className="max-w-[450px] p-0 overflow-hidden border-none rounded-[36px] bg-white shadow-2xl z-[9999] sm:mx-0 mx-4">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>{currentPromo.title}</DialogTitle>
+                    <DialogDescription>{currentPromo.description}</DialogDescription>
+                </DialogHeader>
                 <div className="flex flex-col">
                     {/* Top Image Section */}
                     <div className="relative aspect-[2/1] w-full overflow-hidden">
@@ -95,7 +100,7 @@ export function PromoPopup({ promotions, whatsappNumber }: PromoPopupProps) {
                                     <span className="h-px w-4 bg-red-600" />
                                     <p className="text-[10px] font-bold text-red-600 uppercase tracking-[0.3em]">Penawaran Spesial</p>
                                 </div>
-                                <h2 className="text-xl font-black text-slate-900 leading-tight tracking-tight uppercase font-montserrat line-clamp-2">
+                                <h2 className="text-xl font-black text-slate-900 leading-tight tracking-tight uppercase line-clamp-2">
                                     {currentPromo.title}
                                 </h2>
                                 {currentPromo.period && (

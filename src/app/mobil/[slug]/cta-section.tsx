@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, CreditCard, Heart, Share2, FileDown, FileText } from "lucide-react";
 import { SimulasiKreditModal } from "@/components/simulasi-kredit-modal";
 import { logLead } from "@/actions/leads";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface CTASectionProps {
     carId: string;
@@ -24,7 +25,7 @@ export function CTASection({ carId, carName, carPrice, whatsappNumber, catalogUr
         } catch (e) { }
 
         const message = encodeURIComponent(`Halo, saya tertarik dengan unit ${carName}. Bisa bantu info selengkapnya?`);
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${message}`, "_blank");
+        window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${message}`, "_blank");
     };
 
     const hasCatalog = catalogUrl && catalogUrl.length > 5 && catalogUrl !== "#";
@@ -34,7 +35,7 @@ export function CTASection({ carId, carName, carPrice, whatsappNumber, catalogUr
             window.open(catalogUrl, "_blank");
         } else {
             const message = encodeURIComponent(`Halo, saya ingin meminta brosur/katalog untuk unit ${carName}. Bisa dikirimkan?`);
-            window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${message}`, "_blank");
+            window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${message}`, "_blank");
         }
     };
 

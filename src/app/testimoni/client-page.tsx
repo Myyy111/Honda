@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MessageSquareQuote, Star, Award, Heart, User, ChevronRight } from "lucide-react";
 import type { Testimonial } from "@/types";
 import { Button } from "@/components/ui/button";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface TestimonialClientProps {
     testimonials: Testimonial[];
@@ -190,7 +191,7 @@ export default function TestimonialClient({ testimonials, settings }: Testimonia
                                     Lihat Unit Ready
                                 </Button>
                             </Link>
-                            <Link href={`https://wa.me/${settings?.whatsapp_number || ""}`} target="_blank">
+                            <Link href={`https://wa.me/${cleanPhoneNumber(settings?.whatsapp_number || "")}`} target="_blank">
                                 <Button variant="outline" className="h-14 px-8 rounded-full border-slate-200 text-slate-900 font-bold uppercase tracking-widest hover:bg-white hover:border-slate-300 transition-all duration-300 shadow-sm">
                                     Hubungi Kami
                                 </Button>

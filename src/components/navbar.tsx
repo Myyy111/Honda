@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, Phone, MessageCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, cleanPhoneNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { HondaLogo } from "@/components/ui/honda-logo";
@@ -53,47 +53,51 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
         <nav
             className={cn(
                 "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
-                isScrolled ? "py-1 md:py-2" : "py-2 md:py-4"
+                isScrolled
+                    ? "py-2 md:py-3"
+                    : "py-4 md:py-6 pt-[env(safe-area-inset-top)]"
             )}
         >
             <div className="w-full px-4 md:px-12">
                 <div className={cn(
-                    "flex items-center justify-between transition-all duration-700 h-14 md:h-20 rounded-2xl border",
+                    "flex items-center justify-between transition-all duration-700 h-16 md:h-20 rounded-2xl md:rounded-[2rem] border",
                     isScrolled
-                        ? "bg-white/80 backdrop-blur-xl border-slate-200/50 shadow-sm px-6 md:px-8"
-                        : "bg-white/5 backdrop-blur-sm border-white/10 px-6"
+                        ? "bg-white/90 backdrop-blur-2xl border-slate-200/50 shadow-lg px-4 md:px-8"
+                        : "bg-slate-900/40 backdrop-blur-md border-white/10 px-5"
                 )}>
-                    {/* Mobile App Bar Header: Centered Logo for App-like feel */}
+                    {/* Mobile Branding & Toggle */}
                     <div className="flex lg:hidden items-center justify-between w-full">
-                        <div className="w-10 md:w-12 h-10 md:w-12" /> {/* Spacer */}
-                        <Link href="/" className="flex items-center gap-2 group">
+                        <Link href="/" className="flex items-center gap-2.5 group">
                             {settings?.site_logo || settings?.site_logo_light ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
                                     src={(!isScrolled ? settings.site_logo_light : settings.site_logo) || settings.site_logo || settings.site_logo_light}
                                     alt={settings?.site_name || "Logo"}
                                     className={cn(
-                                        "h-8 w-auto object-contain transition-all duration-500",
+                                        "h-9 w-auto max-w-[180px] object-contain transition-all duration-500",
                                         !isScrolled && !settings?.site_logo_light && "brightness-0 invert"
                                     )}
                                 />
                             ) : (
-                                <HondaLogo className={cn("h-7 w-7 transition-colors duration-500", isScrolled ? "text-red-600" : "text-white")} />
+                                <>
+                                    <HondaLogo className={cn("h-7 w-7 transition-colors duration-500", isScrolled ? "text-red-600" : "text-white")} />
+                                    <span className={cn(
+                                        "font-black text-[13px] tracking-tighter uppercase leading-none",
+                                        isScrolled ? "text-slate-900" : "text-white"
+                                    )}>
+                                        {siteName}<span className="text-red-600">{highlight}</span>
+                                    </span>
+                                </>
                             )}
-                            <span className={cn(
-                                "font-black text-sm tracking-tighter uppercase",
-                                isScrolled ? "text-slate-900" : "text-white",
-                                (settings?.site_logo || settings?.site_logo_light) ? "hidden" : "block"
-                            )}>
-                                {siteName}<span className="text-red-600">{highlight}</span>
-                            </span>
                         </Link>
 
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className={cn(
-                                "p-2.5 transition-all duration-500 rounded-xl bg-white/5 border border-white/10",
-                                isScrolled ? "text-slate-900" : "text-white"
+                                "h-11 w-11 flex items-center justify-center transition-all duration-500 rounded-xl border",
+                                isScrolled
+                                    ? "bg-slate-900 border-slate-900 text-white shadow-lg"
+                                    : "bg-white/10 border-white/20 text-white backdrop-blur-sm"
                             )}
                             aria-label="Toggle Menu"
                         >
@@ -154,7 +158,7 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
 
                     {/* Actions: Integrated design */}
                     <div className="hidden lg:flex items-center">
-                        <Link href={`https://wa.me/${whatsapp}`} target="_blank">
+                        <Link href={`https://wa.me/${cleanPhoneNumber(whatsapp)}`} target="_blank">
                             <Button
                                 className={cn(
                                     "rounded h-10 px-8 font-bold text-[10px] uppercase tracking-widest transition-all duration-500",
@@ -191,7 +195,7 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
                             {/* Gradient Background Decoration */}
                             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-red-600/10 via-transparent to-slate-900 pointer-events-none" />
 
-                            <div className="flex justify-between items-center p-8 relative z-10">
+                            <div className="flex justify-between items-center p-8 pt-[calc(2rem+env(safe-area-inset-top))] relative z-10">
                                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 group">
                                     {settings?.site_logo || settings?.site_logo_light ? (
                                         // eslint-disable-next-line @next/next/no-img-element
@@ -254,7 +258,7 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Connect with Us</p>
-                                        <Link href={`https://wa.me/${whatsapp}`} target="_blank" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <Link href={`https://wa.me/${cleanPhoneNumber(whatsapp)}`} target="_blank" onClick={() => setIsMobileMenuOpen(false)}>
                                             <Button className="w-full h-16 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/20 gap-3 group">
                                                 <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
                                                 WhatsApp Consultant

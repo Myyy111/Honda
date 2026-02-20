@@ -118,7 +118,7 @@ export default async function CarDetail({ params }: Props) {
                             <div className="inline-block bg-red-600/20 text-red-500 text-[10px] font-black tracking-[0.3em] uppercase py-2 px-6 rounded-full border border-red-600/30">
                                 Interior Experience
                             </div>
-                            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
+                            <h2 className="text-3xl md:text-7xl font-black uppercase tracking-tighter leading-tight">
                                 KENYAMANAN <span className="text-red-600">TANPA BATAS</span>
                             </h2>
                             <p className="text-slate-400 font-medium text-sm md:text-lg">
@@ -172,7 +172,7 @@ export default async function CarDetail({ params }: Props) {
                 <div className="container mx-auto px-6 max-w-4xl text-center">
                     <div className="space-y-8">
                         <span className="text-[10px] uppercase tracking-[0.5em] font-black text-red-600">The Power of Dreams</span>
-                        <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">
+                        <h3 className="text-3xl md:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-tight">
                             {car.name} <span className="text-red-600">DNA</span>
                         </h3>
                         <div className="w-24 h-2 bg-red-600 mx-auto rounded-full" />

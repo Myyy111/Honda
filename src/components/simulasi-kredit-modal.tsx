@@ -13,7 +13,7 @@ import {
     X,
     Info
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, cleanPhoneNumber } from "@/lib/utils";
 import { formatIDR, calculateCredit } from "@/lib/credit-utils";
 import { logLead } from "@/actions/leads";
 
@@ -80,7 +80,7 @@ export function SimulasiKreditModal({
             `- Estimasi Cicilan: ${formatIDR(monthlyInstallment)}/bln\n\n` +
             `Mohon bantuannya untuk info lebih lanjut.`
         );
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${message}`, "_blank");
+        window.open(`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=${message}`, "_blank");
     };
 
     return (

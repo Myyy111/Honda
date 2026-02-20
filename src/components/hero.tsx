@@ -5,6 +5,7 @@ import { MessageCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 export function Hero({ settings }: { settings?: Record<string, string> }) {
     const badge = settings?.hero_badge || "Authorized Honda Dealer";
@@ -95,7 +96,7 @@ export function Hero({ settings }: { settings?: Record<string, string> }) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.6 }}
                     >
-                        <Link href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" className="w-full sm:w-auto">
+                        <Link href={`https://wa.me/${cleanPhoneNumber(whatsapp)}`} target="_blank" className="w-full sm:w-auto">
                             <Button className="w-full h-12 md:h-14 px-8 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-red-900/20 transition-all hover:scale-105 border-none">
                                 {ctaPrimary}
                             </Button>

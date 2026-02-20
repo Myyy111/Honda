@@ -6,6 +6,7 @@ import { Calendar, Ticket, ChevronRight, Clock, Percent, Gift } from "lucide-rea
 import Image from "next/image";
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
+import { cleanPhoneNumber } from "@/lib/utils";
 
 interface PromoClientProps {
     promos: any[];
@@ -142,7 +143,7 @@ export default function PromoClient({ promos, settings }: PromoClientProps) {
 
                                     <div className="pt-6">
                                         <Link
-                                            href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Halo,%20saya%20tertarik%20dengan%20promo:%20${encodeURIComponent(promo.title)}`}
+                                            href={`https://wa.me/${cleanPhoneNumber(whatsappNumber)}?text=Halo,%20saya%20tertarik%20dengan%20promo:%20${encodeURIComponent(promo.title)}`}
                                             target="_blank"
                                         >
                                             <Button className="w-full sm:w-auto bg-slate-950 hover:bg-red-600 text-white h-16 px-12 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-500 gap-4 group shadow-2xl shadow-slate-900/10 hover:shadow-red-600/20">
