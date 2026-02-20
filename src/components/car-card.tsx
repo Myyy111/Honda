@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Car {
     id: string;
@@ -17,7 +18,7 @@ interface Car {
     isActive: boolean;
 }
 
-export function CarCard({ car, viewMode = "grid", whatsappNumber = "6281234567890" }: { car: Car, viewMode?: "grid" | "list", whatsappNumber?: string }) {
+export function CarCard({ car, viewMode = "grid", whatsappNumber = "6285863162206" }: { car: Car, viewMode?: "grid" | "list", whatsappNumber?: string }) {
     const formattedPrice = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
@@ -56,58 +57,50 @@ export function CarCard({ car, viewMode = "grid", whatsappNumber = "628123456789
                 )}
 
                 {/* Badge Overlay */}
-                <div className="absolute top-3 left-3 z-20">
-                    <span className="bg-black/90 text-white px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider">
-                        {car.badge || "Hybrid EV Available"}
+                <div className="absolute top-2 left-2 z-20">
+                    <span className="bg-black/90 text-white px-1.5 py-0.5 rounded-sm text-[7px] font-bold uppercase tracking-wider">
+                        {car.badge || "Ready Stock"}
                     </span>
                 </div>
 
-                {/* Bottom Gradient for Image Info */}
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-                    <p className="text-[8px] text-white/90 font-medium tracking-tight">
+                {/* Bottom Gradient - Conditional display */}
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/60 to-transparent hidden md:flex items-end p-2">
+                    <p className="text-[7px] text-white/90 font-medium tracking-tight">
                         As shown: {formattedPrice}*
                     </p>
                 </div>
             </div>
 
-            {/* Content Section */}
+            {/* Content Section: Restored to original Red Background for consistency with your buttons */}
             <div className={cn(
-                "p-5 text-white flex flex-col justify-between flex-1",
+                "p-6 md:p-8 text-white flex flex-col justify-between flex-1",
                 bgColor
             )}>
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-[10px] font-medium text-white/70 mb-1">2026</p>
-                        <h3 className="text-xl font-bold tracking-tight mb-2 uppercase">
+                <div className="space-y-4">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-none">Model Year 2026</p>
+                        <h3 className="text-2xl md:text-3xl font-black tracking-tighter uppercase leading-none">
                             {car.name}
                         </h3>
-                        <p className="text-xs text-white/80 font-medium leading-relaxed line-clamp-2">
-                            Experience the power of dreams in every curve.
-                        </p>
+                        <div className="w-12 h-1 bg-white/20 rounded-full mt-2" />
                     </div>
 
-                    <div className="flex items-center gap-8 pt-2">
-                        <div>
-                            <p className="text-lg font-bold tracking-tight">{formattedPrice}</p>
-                            <p className="text-[9px] text-white/60">Starting OTR *</p>
-                        </div>
-                        <div>
-                            <p className="text-lg font-bold tracking-tight">MT / CVT</p>
-                            <p className="text-[9px] text-white/60">Transmission *</p>
-                        </div>
+                    <div>
+                        <p className="text-xl md:text-2xl font-black tracking-tighter">{formattedPrice}</p>
+                        <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Starting OTR *</p>
                     </div>
                 </div>
 
-                {/* Actions */}
-                <div className="mt-6 flex items-center gap-6">
+                {/* Actions: Compact Buttons */}
+                <div className="mt-6 flex items-center gap-3">
                     <Link href={`/mobil/${car.slug}`}>
-                        <button className="bg-white text-[#CC0000] px-8 h-10 rounded-full font-bold text-[11px] hover:bg-slate-100 transition-colors uppercase">
-                            Explore
-                        </button>
+                        <Button className="px-8 bg-white text-[#CC0000] hover:bg-slate-100 h-11 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-black/10 transition-all active:scale-95">
+                            Details
+                        </Button>
                     </Link>
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 group/btn">
-                        <span className="font-bold text-[11px] border-b border-transparent group-hover/btn:border-white transition-all uppercase">Buy</span>
-                        <ChevronRight className="h-3 w-3" />
+                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="h-11 px-4 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center group/btn hover:bg-black/30 transition-all">
+                        <span className="font-bold text-[9px] text-white uppercase tracking-widest mr-2">Beli</span>
+                        <ChevronRight className="h-4 w-4 text-white group-hover:translate-x-1 transition-transform" />
                     </a>
                 </div>
             </div>

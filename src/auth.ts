@@ -13,13 +13,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 // Simulating robust auth for prototype phase
                 // REAL IMPLEMENTATION SHOULD USE DATABASE QUERY + BCRYPT
                 if (
-                    credentials.email === "admin@autopremium.com" &&
+                    credentials.email === "admin@autoland.com" &&
                     credentials.password === "admin123"
                 ) {
                     return {
                         id: "1",
                         name: "Master Admin",
-                        email: "admin@autopremium.com",
+                        email: "admin@autoland.com",
                         role: "admin",
                     }
                 }

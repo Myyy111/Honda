@@ -1,8 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Award, History, Users2, ShieldCheck, Gem } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Users2, Target, Award, Gem, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
@@ -23,52 +22,124 @@ export default function AboutClient({ settings }: { settings: Record<string, str
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1
+                staggerChildren: 0.1,
+                delayChildren: 0.2
             }
         }
     };
 
-    const heroBadge = settings?.about_hero_badge || "Legacy of Excellence";
-    const heroTitle = settings?.about_hero_title || "Who We";
-    const heroHighlight = settings?.about_hero_highlight || "Are";
-    const heroDesc = settings?.about_hero_desc || "Membangun kepercayaan melalui kualitas kendaraan premium dan layanan personal yang tak tertandingi.";
-    const heroImage = settings?.about_hero_image || "https://images.unsplash.com/photo-1592651475960-e88939c086d0?q=80&w=2000";
+    const heroTitle = settings?.about_hero_title || "Tentang";
+    const heroHighlight = settings?.about_hero_highlight || "Kami";
+    const heroDesc = settings?.about_hero_desc || "Dealer resmi Honda terpercaya dengan komitmen pelayanan terbaik dan integritas tinggi.";
+    const heroImage = settings?.about_hero_image || "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000";
 
     return (
-        <div className="bg-white min-h-screen pb-32 overflow-x-hidden">
-            {/* Hero Section: Consistent with Homepage */}
-            <section className="relative h-[75vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-slate-950">
+        <div className="bg-white min-h-screen overflow-x-hidden font-sans text-slate-900">
+            {/* Hero Section - Clean Style like Homepage */}
+            <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-slate-900">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-white z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-50 z-10" />
                     <Image
                         src={heroImage}
-                        alt="Success & Partnership"
+                        alt="Showroom"
                         fill
                         className="object-cover opacity-60 scale-105"
                         priority
                     />
                 </div>
-                <div className="container mx-auto px-6 relative z-20 text-center">
+                <div className="container mx-auto px-6 relative z-20 text-center mt-10">
                     <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
-                        <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-2 rounded-full mb-10 mx-auto">
-                            <span className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]" />
-                            <span className="text-[10px] text-white/80 uppercase tracking-[0.4em] font-bold">
-                                {heroBadge}
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full mb-6 mx-auto">
+                            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                            <span className="text-[10px] text-white/90 uppercase tracking-[0.3em] font-bold">
+                                Profil Perusahaan
                             </span>
                         </div>
-                        <h1 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter leading-none text-white uppercase">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tighter leading-tight text-white uppercase drop-shadow-sm">
                             {heroTitle} <span className="text-red-600">{heroHighlight}</span>
                         </h1>
-                        <p className="text-white/50 text-base md:text-xl font-medium max-w-2xl mx-auto leading-relaxed uppercase tracking-widest">
+                        <p className="text-slate-200 text-sm md:text-lg font-medium max-w-2xl mx-auto leading-relaxed opacity-80">
                             {heroDesc}
                         </p>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Vision & Mission - Structural Grid */}
-            <section className="py-32 relative overflow-hidden">
+            {/* Main Story Section - Matches Homepage "About" Layout */}
+            <section className="py-16 md:py-24 bg-white relative overflow-hidden">
                 <div className="container mx-auto px-6">
+                    <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                        <motion.div
+                            className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 group"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeInUp}
+                        >
+                            <Image
+                                src={settings?.about_image_url || "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2000"}
+                                alt="Our Story"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                        </motion.div>
+
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeInUp}
+                            className="space-y-8"
+                        >
+                            <div className="space-y-4">
+                                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+                                    {settings?.about_story_title || "Dedikasi Untuk"} <br /> <span className="text-red-600">{settings?.about_story_highlight || "Kepuasan Anda"}</span>
+                                </h2>
+                                <p className="text-slate-500 text-lg leading-relaxed border-l-4 border-red-100 pl-6">
+                                    {settings?.about_story_description || "Kami hadir bukan sekadar sebagai dealer mobil, tetapi sebagai partner terpercaya yang membantu Anda mewujudkan impian memiliki kendaraan Honda terbaik dengan pengalaman yang menyenangkan."}
+                                </p>
+                            </div>
+
+                            <div className="space-y-5">
+                                <p className="text-slate-600 leading-relaxed">
+                                    {settings?.about_story_detail || "Sejak didirikan, kami telah melayani ribuan pelanggan dengan standar pelayanan tertinggi. Fokus kami adalah transparansi, kemudahan proses, dan hubungan jangka panjang dengan setiap pelanggan."}
+                                </p>
+                            </div>
+
+                            <div className="pt-4">
+                                <Link href="/kontak">
+                                    <Button className="bg-red-600 hover:bg-red-700 text-white h-14 px-10 rounded-full font-bold text-sm transition-all duration-300 shadow-lg shadow-red-600/20">
+                                        {settings?.about_cta_label || "Hubungi Kami"}
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Vision & Mission - Clean Cards like Homepage Features */}
+            <section className="py-16 md:py-24 bg-slate-50 relative">
+                <div className="container mx-auto px-6">
+                    <motion.div
+                        className="text-center mb-16"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeInUp}
+                    >
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-red-600 mb-4 font-bold">
+                            {settings?.about_mission_badge || "Core Values"}
+                        </p>
+                        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6">
+                            {settings?.about_mission_title_main || "Visi &"} <span className="text-red-600">{settings?.about_mission_title_highlight || "Misi"}</span>
+                        </h2>
+                        <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                            {settings?.about_mission_description || "Landasan kami dalam memberikan pelayanan terbaik setiap hari."}
+                        </p>
+                    </motion.div>
+
                     <motion.div
                         className="grid grid-cols-1 md:grid-cols-3 gap-8"
                         initial="hidden"
@@ -78,48 +149,33 @@ export default function AboutClient({ settings }: { settings: Record<string, str
                     >
                         {[
                             {
-                                title: "Visi Kami",
-                                icon: ShieldCheck,
-                                desc: "Menjadi benchmark dealer otomotif premium dengan standar pelayanan global dan integritas mutlak.",
-                                bg: "bg-slate-950",
-                                text: "text-white"
+                                title: settings?.about_vision_title || "Visi",
+                                icon: Target,
+                                desc: settings?.about_vision_desc || "Menjadi dealer Honda pilihan utama dengan standar pelayanan kelas dunia."
                             },
                             {
-                                title: "Misi Kami",
+                                title: settings?.about_mission_title || "Misi",
                                 icon: Users2,
-                                desc: "Memberdayakan impian pelanggan melalui seleksi unit terbaik dan ekosistem kepemilikan yang transparan.",
-                                bg: "bg-red-600",
-                                text: "text-white"
+                                desc: settings?.about_mission_desc || "Memberikan pengalaman pembelian mobil yang transparan, cepat, dan berkesan bagi setiap pelanggan."
                             },
                             {
-                                title: "Layanan Kami",
-                                icon: Gem,
-                                desc: "Kurasi unit 360°, simulasi finansial cerdas, dan dukungan purna jual berkelanjutan untuk setiap partner kami.",
-                                bg: "bg-slate-50",
-                                text: "text-slate-900"
+                                title: settings?.about_commitment_title || "Komitmen",
+                                icon: ShieldCheck,
+                                desc: settings?.about_commitment_desc || "Menjaga kepercayaan pelanggan dengan layanan aftersales yang responsif dan solutif."
                             }
-                        ].map((item, i) => (
+                        ].map((item, index) => (
                             <motion.div
-                                key={i}
-                                className={cn(
-                                    "p-12 rounded-2xl space-y-8 flex flex-col items-center text-center border transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200",
-                                    item.bg,
-                                    item.text,
-                                    i === 2 ? "border-slate-100" : "border-transparent"
-                                )}
+                                key={index}
+                                className="p-10 rounded-3xl bg-white border border-slate-100 hover:border-red-100 hover:shadow-xl hover:shadow-red-600/5 transition-all duration-500 group flex flex-col items-center text-center"
                                 variants={fadeInUp}
                             >
-                                <div className={cn(
-                                    "h-20 w-20 rounded-xl flex items-center justify-center shadow-2xl transition-transform duration-500",
-                                    i === 2 ? "bg-white" : "bg-white/10"
-                                )}>
-                                    <item.icon className={cn("h-10 w-10", i === 2 ? "text-red-600" : "text-white")} />
+                                <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-6 group-hover:bg-red-600 transition-colors duration-500 text-red-600 group-hover:text-white">
+                                    <item.icon className="h-8 w-8 transition-colors duration-500" />
                                 </div>
-                                <h3 className="text-2xl font-black uppercase tracking-tighter">{item.title}</h3>
-                                <p className={cn(
-                                    "font-bold leading-relaxed uppercase tracking-widest text-[10px] opacity-60",
-                                    i === 2 ? "text-slate-500" : "text-white/60"
-                                )}>
+                                <h3 className="text-xl font-bold mb-4 text-slate-900 group-hover:text-red-600 transition-colors">
+                                    {item.title}
+                                </h3>
+                                <p className="text-slate-500 text-sm leading-relaxed">
                                     {item.desc}
                                 </p>
                             </motion.div>
@@ -128,91 +184,38 @@ export default function AboutClient({ settings }: { settings: Record<string, str
                 </div>
             </section>
 
-            {/* Why AutoPremium - Engineering Focus */}
-            <section className="bg-slate-950 py-32 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(220,38,38,0.1),transparent_50%)]" />
-                <div className="container mx-auto px-6 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-24 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <p className="text-red-600 text-[11px] font-bold uppercase tracking-[0.4em] mb-6">Engineering Excellence</p>
-                            <h2 className="text-5xl md:text-7xl font-black mb-10 tracking-tighter uppercase leading-[0.9]">Why <br /><span className="text-red-600">The Best?</span></h2>
-                            <p className="text-white/40 text-lg md:text-xl font-medium leading-loose max-w-lg mb-12">
-                                Kami tidak hanya menjual mobil; kami menawarkan standar hidup. Setiap unit yang meninggalkan showroom kami telah melalui proses kurasi yang melampaui standar industri.
-                            </p>
-
-                            <div className="grid grid-cols-2 gap-10">
-                                {[
-                                    { val: "180+", label: "Point Inspection" },
-                                    { val: "24h", label: "Specialist Support" },
-                                    { val: "0.0%", label: "Fake Records" },
-                                    { val: "100%", label: "Authenticity" }
-                                ].map((stat, idx) => (
-                                    <div key={idx} className="space-y-2">
-                                        <p className="text-4xl font-black text-white tracking-tighter">{stat.val}</p>
-                                        <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest">{stat.label}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-
-                        <div className="space-y-6">
-                            {[
-                                { title: "Unit Ready Stock", desc: "Ketersediaan unit eksklusif dengan kondisi showroom dan siap untuk dikirim segera." },
-                                { title: "Proses Transparan", desc: "Dokumentasi lengkap dan proses administrasi yang efisien tanpa ada yang disembunyikan." },
-                                { title: "Seleksi Ketat", desc: "Hanya 1 dari 10 mobil yang kami inspeksi masuk ke dalam katalog eksklusif kami." }
-                            ].map((item, i) => (
-                                <motion.div
-                                    key={i}
-                                    className="p-8 rounded-xl bg-white/5 border border-white/5 group hover:border-red-600/50 transition-all duration-500"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    viewport={{ once: true }}
-                                >
-                                    <div className="flex gap-8 items-start">
-                                        <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-red-600 transition-colors">
-                                            <div className="h-2 w-2 rounded-full bg-red-600 group-hover:bg-white" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-2xl font-black text-white uppercase tracking-tight mb-2">{item.title}</h4>
-                                            <p className="text-white/40 text-[13px] font-medium leading-relaxed uppercase tracking-widest">{item.desc}</p>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Visit Us CTA: Homepage Background Style */}
-            <section className="py-32">
+            {/* Why Choose Us - Detailed List */}
+            <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-6">
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={fadeInUp}
-                        className="bg-slate-950 rounded-2xl p-16 md:p-24 text-center text-white relative overflow-hidden"
+                        className="max-w-4xl mx-auto bg-slate-900 rounded-[2rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl shadow-slate-900/20"
                     >
-                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-red-600/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                        {/* Abstract Decorations */}
+                        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-red-600/20 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
-                        <div className="relative z-10 max-w-3xl mx-auto space-y-10">
-                            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none">Visit Our <span className="text-red-600">Showroom</span></h2>
-                            <p className="text-white/40 text-lg md:text-xl font-medium uppercase tracking-[0.3em] leading-relaxed">Bergabunglah dengan ribuan pemilik bangga yang telah menemukan standar baru dalam berkendara.</p>
+                        <h2 className="text-2xl md:text-4xl font-bold mb-10 relative z-10">{settings?.about_why_title || "Kenapa Memilih Kami?"}</h2>
 
-                            <div className="pt-8">
-                                <Link href="/kontak">
-                                    <Button className="bg-red-600 hover:bg-red-700 h-16 px-12 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-xl shadow-red-600/10">
-                                        Get Direction
-                                    </Button>
-                                </Link>
-                            </div>
+                        <div className="grid md:grid-cols-2 gap-8 text-left relative z-10">
+                            {[
+                                { title: settings?.about_why_1_title || "Unit Ready Stock", desc: settings?.about_why_1_desc || "Pilihan unit lengkap dan siap kirim tanpa indent lama." },
+                                { title: settings?.about_why_2_title || "Harga Kompetitif", desc: settings?.about_why_2_desc || "Penawaran harga terbaik dengan diskon dan bonus menarik." },
+                                { title: settings?.about_why_3_title || "Proses Cepat", desc: settings?.about_why_3_desc || "Dibantu sales profesional hingga approve leasing." },
+                                { title: settings?.about_why_4_title || "Aftersales Terjamin", desc: settings?.about_why_4_desc || "Didukung bengkel resmi dan layanan darurat 24 jam." }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                        <CheckCircle2 className="h-5 w-5 text-red-500" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg mb-1">{item.title}</h4>
+                                        <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
                 </div>

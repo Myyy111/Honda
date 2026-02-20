@@ -4,6 +4,8 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
+import { BottomNav } from "./bottom-nav";
+import { FloatingWhatsApp } from "./floating-whatsapp";
 
 export function ConditionalLayout({
     children,
@@ -23,12 +25,14 @@ export function ConditionalLayout({
     }
 
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
             <Navbar settings={settings} />
             <main className="flex-grow">
                 {children}
             </main>
+            {!isCarDetail && <BottomNav />}
             <Footer settings={settings} />
-        </>
+            {!isCarDetail && <FloatingWhatsApp number={settings?.whatsapp_number} siteName={settings?.site_name} />}
+        </div>
     );
 }

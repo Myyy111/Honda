@@ -31,6 +31,23 @@ export default async function AdminDashboard() {
         take: 3
     });
 
+    const recentLeadsRaw = await prisma.leadLog.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5
+    });
+
+    // Get all unique car IDs from leads to fetch names manually (Safe Fallback)
+    const carIds = [...new Set(recentLeadsRaw.map(l => l.carId).filter(Boolean))] as string[];
+    const cars = await prisma.car.findMany({
+        where: { id: { in: carIds } },
+        select: { id: true, name: true }
+    });
+
+    const recentLeads = recentLeadsRaw.map(lead => ({
+        ...lead,
+        car: cars.find(c => c.id === lead.carId) || null
+    }));
+
     const stats = [
         { title: "Total Unit Katalog", value: totalCars.toString(), icon: CarIcon, color: "text-red-600", bg: "bg-red-50" },
         { title: "Promo Aktif", value: totalPromos.toString(), icon: TicketPercent, color: "text-red-600", bg: "bg-red-50" },
@@ -98,7 +115,7 @@ export default async function AdminDashboard() {
                                                 <img src={car.thumbnail} alt={car.name} className="absolute inset-0 w-full h-full object-cover" />
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{car.name}</p>
+                                                <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors uppercase text-sm tracking-tight">{car.name}</p>
                                                 <p className="text-xs text-slate-500 mt-1">{car.status}</p>
                                             </div>
                                         </div>
@@ -118,24 +135,56 @@ export default async function AdminDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Quick Action/Settings */}
-                <Card className="border border-slate-200 shadow-sm bg-white rounded-2xl overflow-hidden">
-                    <CardHeader className="p-6 pb-2">
-                        <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center mb-4">
-                            <Settings className="h-6 w-6 text-blue-600" />
+                {/* Recent Leads */}
+                <Card className="border border-slate-200 shadow-sm bg-white rounded-2xl overflow-hidden flex flex-col">
+                    <CardHeader className="p-6 border-b border-slate-100">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg font-bold text-slate-900">Leads Terbaru</CardTitle>
+                            <div className="bg-red-50 text-red-600 p-1.5 rounded-lg">
+                                <TrendingUp className="h-4 w-4" />
+                            </div>
                         </div>
-                        <CardTitle className="text-lg font-bold text-slate-900">Pengaturan</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-6 pt-0">
-                        <p className="text-slate-500 text-sm mb-6">
-                            Konfigurasi informasi website, kontak WhatsApp, dan konten utama.
-                        </p>
-                        <Link href="/admin/settings">
-                            <Button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold h-11 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                                Buka Pengaturan
-                                <ArrowUpRight className="h-4 w-4" />
-                            </Button>
-                        </Link>
+                    <CardContent className="p-6 flex-1">
+                        <div className="space-y-6">
+                            {recentLeads.length === 0 ? (
+                                <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                    <MousePointer2 className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                                    <p className="text-xs font-medium text-slate-400">Belum ada leads masuk</p>
+                                </div>
+                            ) : (
+                                recentLeads.map((lead) => (
+                                    <div key={lead.id} className="flex items-center gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                                        <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                                            <MessageSquare className="h-4 w-4 text-slate-500" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-bold text-slate-900 truncate">
+                                                {(lead as any).car?.name || "Klik WhatsApp General"}
+                                            </p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+                                                    {lead.type?.replace(/_/g, ' ')}
+                                                </span>
+                                                <span className="text-[9px] text-slate-300">•</span>
+                                                <span className="text-[9px] text-slate-400">
+                                                    {new Date(lead.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="mt-8">
+                            <Link href="/admin/settings">
+                                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold h-11 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+                                    <Settings className="h-4 w-4" />
+                                    Atur Kontak Sales
+                                </Button>
+                            </Link>
+                        </div>
                     </CardContent>
                 </Card>
             </div>

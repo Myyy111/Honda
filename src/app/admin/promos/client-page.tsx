@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { deletePromotionAction, updatePromotionAction } from "@/actions/promos";
-import { Promotion } from "@/lib/store";
+import type { Promotion } from "@/types";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 

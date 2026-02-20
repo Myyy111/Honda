@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { deleteTestimonialAction, updateTestimonialAction } from "@/actions/testimonials";
-import { Testimonial } from "@/lib/store";
+import type { Testimonial } from "@/types";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 

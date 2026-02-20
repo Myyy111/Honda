@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -10,14 +9,17 @@ import {
     ChevronRight,
     Info,
     Image as ImageIcon,
-    FileText,
     Youtube,
-    Layout,
-    CheckCircle2
+    FileText,
+    Paintbrush,
+    Layout
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/image-upload";
+import { GalleryManager } from "@/components/gallery-manager";
+import { VariantManager } from "@/components/variant-manager";
+import { ColorVisualManager } from "@/components/color-visual-manager";
 import {
     Card,
     CardContent,
@@ -34,6 +36,7 @@ export default function AdminCarForm() {
     const router = useRouter();
     const handleBack = () => router.back();
     const [isSaving, setIsSaving] = useState(false);
+    const [masterColors, setMasterColors] = useState<any[]>([]);
 
     return (
         <motion.form
@@ -43,6 +46,14 @@ export default function AdminCarForm() {
                 e.preventDefault();
                 setIsSaving(true);
                 const formData = new FormData(e.currentTarget);
+                const name = (formData.get("name") as string || "").trim();
+                const description = (formData.get("description") as string || "").trim();
+
+                if (!name || !description) {
+                    alert("Mohon lengkapi Nama Model dan Deskripsi pada tab 'Informasi & Varian'.");
+                    setIsSaving(false);
+                    return;
+                }
 
                 try {
                     const result = await createCar(formData);
@@ -61,7 +72,6 @@ export default function AdminCarForm() {
             }}
             className="max-w-5xl mx-auto space-y-8 pb-32"
         >
-            {/* Header */}
             {/* Sticky Header */}
             <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md rounded-b-2xl py-6 mb-8 border-b border-slate-200 shadow-sm">
                 <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
@@ -89,33 +99,19 @@ export default function AdminCarForm() {
                         <Button
                             type="submit"
                             disabled={isSaving}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11 rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold group"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11 rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold group flex items-center gap-2"
                         >
-                            <AnimatePresence mode="wait">
-                                {isSaving ? (
-                                    <motion.div
-                                        key="saving"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>Menyimpan...</span>
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        key="save"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <Save className="h-4 w-4" />
-                                        <span>Simpan Unit</span>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            {isSaving ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>Menyimpan...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    <span>Simpan Unit</span>
+                                </>
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -129,15 +125,11 @@ export default function AdminCarForm() {
                             <TabsList className="bg-transparent gap-1">
                                 <TabsTrigger value="info" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
                                     <Info className="w-4 h-4 mr-2" />
-                                    Informasi
+                                    Informasi & Varian
                                 </TabsTrigger>
                                 <TabsTrigger value="media" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
                                     <ImageIcon className="w-4 h-4 mr-2" />
-                                    Visual & Media
-                                </TabsTrigger>
-                                <TabsTrigger value="specs" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
-                                    <FileText className="w-4 h-4 mr-2" />
-                                    Spesifikasi
+                                    Visual & Gallery
                                 </TabsTrigger>
                             </TabsList>
                         </div>
@@ -147,7 +139,7 @@ export default function AdminCarForm() {
                                 <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Info className="h-4 w-4 text-blue-600" />
-                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Informasi Utama</CardTitle>
+                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Informasi Unit Baru</CardTitle>
                                     </div>
                                     <CardDescription className="text-xs font-medium text-slate-500">Masukkan detail tipe dan harga OTR terbaru.</CardDescription>
                                 </CardHeader>
@@ -155,7 +147,7 @@ export default function AdminCarForm() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nama Model</label>
-                                            <Input name="name" required placeholder="Contoh: Honda HR-V" className="h-11 rounded-lg border-slate-200 font-medium text-slate-900 focus-visible:ring-blue-500" />
+                                            <Input name="name" placeholder="Contoh: Honda HR-V" className="h-11 rounded-lg border-slate-200 font-medium text-slate-900 focus-visible:ring-blue-500" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge (Opsional)</label>
@@ -166,30 +158,36 @@ export default function AdminCarForm() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Status Ketersediaan</label>
-                                            <Select name="status" defaultValue="Ready Stock">
-                                                <SelectTrigger className="h-11 rounded-lg border-slate-200 bg-white font-medium text-slate-900">
-                                                    <SelectValue placeholder="Pilih Status" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Ready Stock">Ready Stock</SelectItem>
-                                                    <SelectItem value="Indent">Indent</SelectItem>
-                                                    <SelectItem value="Coming Soon">Coming Soon</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <select name="status" defaultValue="Ready Stock" className="w-full h-11 rounded-lg border border-slate-200 bg-white px-3 font-medium text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500">
+                                                <option value="Ready Stock">Ready Stock</option>
+                                                <option value="Indent">Indent</option>
+                                                <option value="Coming Soon">Coming Soon</option>
+                                            </select>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Harga OTR Mulai Dari</label>
                                             <div className="relative">
                                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-600 text-xs">IDR</span>
-                                                <Input name="price" required type="number" placeholder="0" className="h-11 rounded-lg border-slate-200 pl-12 font-bold text-slate-900 focus-visible:ring-blue-500" />
+                                                <Input name="price" type="number" placeholder="0" className="h-11 rounded-lg border-slate-200 pl-12 font-bold text-slate-900 focus-visible:ring-blue-500" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi & Keunggulan</label>
-                                        <textarea name="description" required className="w-full min-h-[150px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" placeholder="Jelaskan fitur utama dan promo mobil ini..." />
+                                        <textarea name="description" className="w-full min-h-[120px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" placeholder="Jelaskan fitur utama dan promo mobil ini..." />
                                     </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Variant Manager */}
+                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                                <CardContent className="p-6">
+                                    <VariantManager
+                                        name="variants"
+                                        defaultValue="[]"
+                                        globalColors={masterColors}
+                                    />
                                 </CardContent>
                             </Card>
                         </TabsContent>
@@ -203,12 +201,43 @@ export default function AdminCarForm() {
                                     </div>
                                     <CardDescription className="text-xs font-medium text-slate-500">Thumbnail dan Gallery gambar untuk katalog.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Thumbnail (Utama)</label>
-                                        <ImageUpload name="thumbnail" recommendation="1200 x 800 px (Rasio 3:2)" />
+                                <CardContent className="p-6 space-y-8">
+                                    {/* Color Registry */}
+                                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <Paintbrush className="w-4 h-4 text-blue-600" />
+                                            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Registrasi Master Warna</h3>
+                                        </div>
+                                        <p className="text-[10px] text-slate-500 font-medium">Daftarkan warna di sini dahulu sebelum memilihnya di Varian.</p>
+                                        <ColorVisualManager
+                                            name="colors"
+                                            value={masterColors}
+                                            onChange={(val) => setMasterColors(val)}
+                                        />
                                     </div>
-                                    <div className="space-y-4">
+
+                                    <div className="space-y-6 pt-6 border-t border-slate-100">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Thumbnail (Utama)</label>
+                                            <ImageUpload name="thumbnail" recommendation="1200 x 800 px (Rasio 3:2)" />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                            <GalleryManager
+                                                name="gallery"
+                                                defaultValue="[]"
+                                                label="Gallery Eksterior"
+                                                description="Foto eksterior mobil."
+                                            />
+                                            <GalleryManager
+                                                name="interiorGallery"
+                                                defaultValue="[]"
+                                                label="Gallery Interior"
+                                                description="Foto kenyamanan kabin."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-8 border-t border-slate-100">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Youtube Review Video (URL)</label>
                                             <div className="relative">
@@ -217,99 +246,17 @@ export default function AdminCarForm() {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Link E-Katalog (Google Drive/PDF)</label>
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Link E-Katalog (Drive/PDF)</label>
                                             <div className="relative">
                                                 <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-600" />
                                                 <Input name="catalogUrl" placeholder="https://drive.google.com/..." className="h-11 rounded-lg border-slate-200 pl-12 font-medium text-slate-900 focus-visible:ring-blue-500" />
                                             </div>
-                                            <p className="text-[10px] text-slate-400 font-medium">Link ini akan digunakan khusus untuk tombol "Unduh Katalog" di halaman unit ini.</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="specs" forceMount className="space-y-8 mt-0 focus-visible:outline-none data-[state=inactive]:hidden">
-                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <FileText className="h-4 w-4 text-blue-600" />
-                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Spesifikasi Teknis</CardTitle>
-                                    </div>
-                                    <CardDescription className="text-xs font-medium text-slate-500">Detail spesifikasi mesin dan performa kendaraan.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Kapasitas Mesin</label>
-                                            <Input name="spec_engine_capacity" placeholder="e.g. 1498 cc" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tipe Mesin</label>
-                                            <Input name="spec_engine_type" placeholder="e.g. 1.5L DOHC VTEC Turbo" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Transmisi</label>
-                                            <Select name="spec_transmission" defaultValue="CVT">
-                                                <SelectTrigger className="h-11 rounded-lg border-slate-200 bg-white font-medium text-slate-900">
-                                                    <SelectValue placeholder="Pilih Transmisi" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="CVT">CVT</SelectItem>
-                                                    <SelectItem value="AT">Automatic (AT)</SelectItem>
-                                                    <SelectItem value="MT">Manual (MT)</SelectItem>
-                                                    <SelectItem value="e-CVT">e-CVT (Hybrid)</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Bahan Bakar</label>
-                                            <Select name="spec_fuel_type" defaultValue="Bensin">
-                                                <SelectTrigger className="h-11 rounded-lg border-slate-200 bg-white font-medium text-slate-900">
-                                                    <SelectValue placeholder="Pilih Bahan Bakar" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Bensin">Bensin (Petrol)</SelectItem>
-                                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                                    <SelectItem value="Electric">Electric (EV)</SelectItem>
-                                                    <SelectItem value="Diesel">Diesel</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tenaga Maksimum</label>
-                                            <Input name="spec_max_power" placeholder="e.g. 121 PS / 6600 rpm" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Torsi Maksimum</label>
-                                            <Input name="spec_max_torque" placeholder="e.g. 145 Nm / 4300 rpm" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tahun Pembuatan</label>
-                                            <Input name="spec_year" placeholder="e.g. 2024" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Kapasitas Kursi</label>
-                                            <Input name="spec_seating_capacity" placeholder="e.g. 5 Penumpang" className="h-11 rounded-lg border-slate-200 font-medium" />
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
                         </TabsContent>
                     </Tabs>
-
-                    {/* Hidden Inputs for JSON Data */}
-                    <input type="hidden" name="gallery" value="[]" />
-                    <input type="hidden" name="colors" value="[]" />
                 </div>
 
                 {/* Right: Publish Status */}
@@ -342,11 +289,11 @@ export default function AdminCarForm() {
                             <h3 className="text-sm font-bold uppercase tracking-wider">Petunjuk</h3>
                         </div>
                         <p className="text-xs font-medium text-slate-400 leading-relaxed">
-                            Pastikan harga OTR sudah sesuai dengan kebijakan dealer terbaru agar tidak menyesatkan pembeli. Gunakan gambar berkualitas tinggi untuk banner.
+                            Formulir ini sudah disederhanakan. Masukkan informasi dasar, lalu atur harga dan spesifikasi spesifik di bagian Varian.
                         </p>
                     </div>
                 </div>
             </div>
-        </motion.form>
+        </motion.form >
     );
 }

@@ -17,7 +17,7 @@ import Image from "next/image";
 import { motion, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { logLead } from "@/lib/store";
+import { logLead } from "@/actions/leads";
 import Link from "next/link";
 
 interface ContactClientProps {
@@ -25,8 +25,11 @@ interface ContactClientProps {
 }
 
 export default function ContactClient({ settings }: ContactClientProps) {
-    const whatsappNumber = settings.whatsapp_number || "6282129291603";
-    const address = settings.address || "Kelapa Gading, Jakarta Utara, Indonesia";
+    const whatsappNumber = settings.whatsapp_number || "6285863162206";
+    // Override old seed address if present
+    const rawAddress = settings.address;
+    const isOldAddress = rawAddress === "Jl. Raya Otomotif No. 88, Jakarta Selatan" || rawAddress === "Kelapa Gading, Jakarta Utara, Indonesia";
+    const address = (rawAddress && !isOldAddress) ? rawAddress : "Honda Autoland Kelapa Gading, Jl. Boulevard Bar. Raya No.3, RW.5, Klp. Gading";
     const email = settings.email || "hondaachmad@gmail.com";
     const instagram = settings.instagram_url || "#";
     const facebook = settings.facebook_url || "#";
@@ -113,7 +116,7 @@ export default function ContactClient({ settings }: ContactClientProps) {
                                 {heroBadge}
                             </span>
                         </div>
-                        <h1 className="text-4xl md:text-8xl font-black mb-8 tracking-tighter leading-[1.1] text-white uppercase">
+                        <h1 className="text-3xl md:text-8xl font-black mb-8 tracking-tighter leading-[1.1] text-white uppercase">
                             {heroTitle} <span className="text-red-600">{heroHighlight}</span>
                         </h1>
                         <p className="text-white/50 text-base md:text-xl font-medium max-w-2xl mx-auto leading-relaxed uppercase tracking-widest">
@@ -265,40 +268,22 @@ export default function ContactClient({ settings }: ContactClientProps) {
                         </div>
 
                         {/* Premium Map Wrapper */}
+                        {/* Premium Map Wrapper */}
                         <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl group border border-slate-100">
-                            <Image
-                                src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2000"
-                                alt="Showroom Location"
-                                fill
-                                className="object-cover transition-all duration-1000 grayscale hover:grayscale-0 group-hover:scale-105"
-                                sizes="(max-width: 1024px) 100vw, 66vw"
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                loading="lazy"
+                                allowFullScreen
+                                src={`https://maps.google.com/maps?q=Honda+Autoland+Kelapa+Gading&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                className="absolute inset-0 w-full h-full grayscale hover:grayscale-0 transition-all duration-1000"
                             />
-                            <div className="absolute inset-0 bg-slate-900/10" />
-                            <div className="absolute inset-0 flex items-center justify-center p-8">
-                                <motion.div
-                                    className="bg-white/95 backdrop-blur-xl p-10 rounded-2xl shadow-2xl max-w-sm text-center border border-white"
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                >
-                                    <div className="h-16 w-16 rounded-xl bg-red-600 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-red-600/20">
-                                        <MapPin className="h-8 w-8 text-white" />
-                                    </div>
-                                    <h4 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-2">Our Showroom</h4>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-8 leading-relaxed">
-                                        {address}
-                                    </p>
-                                    <Link href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} target="_blank">
-                                        <Button variant="outline" className="h-14 px-10 rounded-xl font-bold text-[10px] uppercase tracking-widest border-slate-200 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-500">
-                                            Get Direction
-                                        </Button>
-                                    </Link>
-                                </motion.div>
-                            </div>
                         </div>
                     </div>
                 </motion.div>
             </div>
         </div>
+
     );
 }

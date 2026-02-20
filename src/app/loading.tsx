@@ -11,7 +11,7 @@ export default function Loading() {
 
             <div className="mt-8 space-y-2">
                 <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest">
-                    AutoPremium
+                    Autoland
                 </h3>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] animate-pulse">
                     Loading Experience...

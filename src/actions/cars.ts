@@ -31,19 +31,11 @@ export async function createCar(formData: FormData) {
 
         if (!name) throw new Error("Nama unit tidak boleh kosong.");
 
-        const price = parseFloat(priceStr);
+        const price = parseInt(priceStr, 10);
         if (isNaN(price)) throw new Error("Harga unit harus berupa angka valid.");
 
         // Construct specs object from individual fields
-        const specsObj: Record<string, string> = {};
-        if (formData.get("spec_engine_capacity")) specsObj["Engine Capacity"] = formData.get("spec_engine_capacity") as string;
-        if (formData.get("spec_engine_type")) specsObj["Engine Type"] = formData.get("spec_engine_type") as string;
-        if (formData.get("spec_transmission")) specsObj["Transmission"] = formData.get("spec_transmission") as string;
-        if (formData.get("spec_max_torque")) specsObj["Max Torque"] = formData.get("spec_max_torque") as string;
-        if (formData.get("spec_max_power")) specsObj["Max Power"] = formData.get("spec_max_power") as string;
-        if (formData.get("spec_fuel_type")) specsObj["Fuel Type"] = formData.get("spec_fuel_type") as string;
-        if (formData.get("spec_seating_capacity")) specsObj["Seating Capacity"] = formData.get("spec_seating_capacity") as string;
-        if (formData.get("spec_year")) specsObj["Year"] = formData.get("spec_year") as string;
+        // Specs are now handled per-variant in the variants JSON string
 
         // Gallery can be multiple files, but for now we expect a comma-separated or JSON string from hidden input
         const galleryData = formData.get("gallery") as string || "[]";
@@ -58,11 +50,13 @@ export async function createCar(formData: FormData) {
             badge: (formData.get("badge") as string) || null,
             thumbnail: (formData.get("thumbnail") as string) || "",
             gallery: galleryData,
+            interiorGallery: (formData.get("interiorGallery") as string) || "[]",
             videoUrl: (formData.get("videoUrl") as string) || null,
             catalogUrl: (formData.get("catalogUrl") as string) || null,
             description: (formData.get("description") as string) || "",
-            specs: JSON.stringify(specsObj),
+            specDefinitions: (formData.get("specDefinitions") as string) || "[]",
             colors: colorsData,
+            variants: (formData.get("variants") as string) || "[]",
             isActive: formData.get("isActive") === "on",
             isFeatured: formData.get("isFeatured") === "on",
         };
@@ -96,19 +90,10 @@ export async function updateCarAction(id: string, formData: FormData) {
 
         if (!name) throw new Error("Nama unit tidak boleh kosong.");
 
-        const price = parseFloat(priceStr);
+        const price = parseInt(priceStr, 10);
         if (isNaN(price)) throw new Error("Harga unit harus berupa angka valid.");
 
-        // Construct specs object from individual fields
-        const specsObj: Record<string, string> = {};
-        if (formData.get("spec_engine_capacity")) specsObj["Engine Capacity"] = formData.get("spec_engine_capacity") as string;
-        if (formData.get("spec_engine_type")) specsObj["Engine Type"] = formData.get("spec_engine_type") as string;
-        if (formData.get("spec_transmission")) specsObj["Transmission"] = formData.get("spec_transmission") as string;
-        if (formData.get("spec_max_torque")) specsObj["Max Torque"] = formData.get("spec_max_torque") as string;
-        if (formData.get("spec_max_power")) specsObj["Max Power"] = formData.get("spec_max_power") as string;
-        if (formData.get("spec_fuel_type")) specsObj["Fuel Type"] = formData.get("spec_fuel_type") as string;
-        if (formData.get("spec_seating_capacity")) specsObj["Seating Capacity"] = formData.get("spec_seating_capacity") as string;
-        if (formData.get("spec_year")) specsObj["Year"] = formData.get("spec_year") as string;
+        // Specs are now handled per-variant
 
         const carData = {
             name,
@@ -119,11 +104,13 @@ export async function updateCarAction(id: string, formData: FormData) {
             badge: (formData.get("badge") as string) || null,
             thumbnail: (formData.get("thumbnail") as string) || "",
             gallery: (formData.get("gallery") as string) || "[]",
+            interiorGallery: (formData.get("interiorGallery") as string) || "[]",
             videoUrl: (formData.get("videoUrl") as string) || null,
             catalogUrl: (formData.get("catalogUrl") as string) || null,
             description: (formData.get("description") as string) || "",
-            specs: JSON.stringify(specsObj),
+            specDefinitions: (formData.get("specDefinitions") as string) || "[]",
             colors: (formData.get("colors") as string) || "[]",
+            variants: (formData.get("variants") as string) || "[]",
             isActive: formData.get("isActive") === "on",
             isFeatured: formData.get("isFeatured") === "on",
         };

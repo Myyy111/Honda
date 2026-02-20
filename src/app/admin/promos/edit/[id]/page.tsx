@@ -1,15 +1,21 @@
 
-import { prisma } from "@/lib/prisma";
-import EditPromotionClient from "./client-page";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import EditPromoClientPage from "./client-page";
 
-export default async function EditPromotionPage({ params }: { params: Promise<{ id: string }> }) {
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
+
+export default async function EditPromoPage({ params }: PageProps) {
     const { id } = await params;
     const promo = await prisma.promotion.findUnique({
-        where: { id: id }
+        where: { id },
     });
 
-    if (!promo) return notFound();
+    if (!promo) {
+        notFound();
+    }
 
-    return <EditPromotionClient promo={promo as any} />;
+    return <EditPromoClientPage promo={promo} />;
 }

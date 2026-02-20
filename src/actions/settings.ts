@@ -51,6 +51,9 @@ export async function updateSettingsAction(formData: FormData) {
         console.log("Database update complete. Revalidating...");
         revalidatePath("/");
         revalidatePath("/mobil");
+        revalidatePath("/promo");
+        revalidatePath("/tentang");
+        revalidatePath("/testimoni");
         revalidatePath("/admin/settings");
 
         return { success: true };

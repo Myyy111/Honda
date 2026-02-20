@@ -1,54 +1,50 @@
-
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { authenticate } from "@/actions/auth-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, User, ShieldCheck, ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
-    const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    const [errorMessage, dispatch, isPending] = useActionState(authenticate, undefined);
 
     return (
-        <form action={dispatch} className="grid gap-8">
-            <div className="space-y-6">
-                <div className="space-y-3">
-                    <Label htmlFor="email" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <User className="h-3 w-3 text-red-600" />
-                        Admin Email
+        <form action={dispatch} className="grid gap-6">
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-slate-700">
+                        Email
                     </Label>
                     <Input
                         id="email"
                         type="email"
                         name="email"
-                        placeholder="ADMIN@AUTOPREMIUM.COM"
+                        placeholder="masukan email"
                         required
-                        className="h-14 rounded-2xl border-white/5 bg-white/5 px-6 font-bold text-white text-xs uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 focus:ring-2 focus:ring-red-600/50 transition-all outline-none border-none"
+                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-600 focus:ring-red-600/20 transition-all"
                     />
                 </div>
 
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between ml-1">
-                        <Label htmlFor="password" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <ShieldCheck className="h-3 w-3 text-red-600" />
-                            Secret Password
-                        </Label>
-                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-medium text-slate-700">
+                        Password
+                    </Label>
                     <Input
                         id="password"
                         type="password"
                         name="password"
                         required
                         placeholder="••••••••"
-                        className="h-14 rounded-2xl border-white/5 bg-white/5 px-6 font-bold text-white text-xs uppercase tracking-widest placeholder:text-white/10 focus:bg-white/10 focus:ring-2 focus:ring-red-600/50 transition-all outline-none border-none"
+                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-600 focus:ring-red-600/20 transition-all"
                     />
                 </div>
             </div>
 
             {errorMessage && (
-                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-red-400 bg-red-600/10 p-5 rounded-2xl border border-red-600/20">
+                <div className="flex items-center gap-3 text-sm font-medium text-red-600 bg-red-50 p-4 rounded-lg border border-red-100">
                     <AlertCircle className="h-4 w-4 shrink-0" />
                     <p>{errorMessage}</p>
                 </div>
@@ -65,13 +61,13 @@ function LoginButton() {
     return (
         <Button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-black h-16 rounded-2xl shadow-xl shadow-red-600/10 transition-all duration-500 uppercase text-xs tracking-[0.2em] gap-3 group"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-11 rounded-lg shadow-lg shadow-red-600/20 transition-all flex items-center justify-center gap-2"
             disabled={pending}
         >
             {pending ? "Authenticating..." : (
                 <>
-                    Enter Dashboard
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    Masuk Dashboard
+                    <ArrowRight className="h-4 w-4" />
                 </>
             )}
         </Button>

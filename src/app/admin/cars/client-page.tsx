@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Car } from "@/lib/store";
+import type { Car } from "@/types";
 import { deleteCarAction } from "@/actions/cars";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -104,8 +104,8 @@ export default function AdminCarsListClient({ initialCars }: AdminCarsListClient
                 <div className="relative flex-grow max-w-md w-full">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <Input
-                        placeholder="Cari unit mobil..."
-                        className="pl-10 h-11 rounded-lg border-slate-200 bg-white font-medium placeholder:text-slate-400 text-slate-900 focus-visible:ring-blue-500"
+                        placeholder="Cari unit berdasarkan nama..."
+                        className="pl-10 h-11 rounded-lg border-slate-200 bg-white font-medium placeholder:text-slate-400 text-slate-900 focus-visible:ring-blue-500 transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

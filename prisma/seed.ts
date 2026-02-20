@@ -13,10 +13,10 @@ async function main() {
     // Seed Settings
     const settings = [
         { key: 'site_name', value: 'Honda' },
-        { key: 'site_name_highlight', value: 'Baru' },
+        { key: 'site_name_highlight', value: 'Autoland' },
         { key: 'whatsapp_number', value: '6281234567890' },
         { key: 'phone_number', value: '+62 812-3456-7890' },
-        { key: 'email', value: 'info@hondabaru.com' },
+        { key: 'email', value: 'info@hondaautoland.com' },
         { key: 'address', value: 'Jl. Raya Otomotif No. 88, Jakarta Selatan' },
         { key: 'footer_description', value: 'Dealer resmi Honda yang menghadirkan unit terbaru dengan garansi resmi dan layanan purna jual terbaik.' },
         { key: 'hero_badge', value: 'Authorized Honda Dealer' },

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -9,12 +8,16 @@ import {
     ChevronRight,
     Info,
     Image as ImageIcon,
+    Youtube,
     FileText,
-    Youtube
+    Paintbrush
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/image-upload";
+import { GalleryManager } from "@/components/gallery-manager";
+import { VariantManager } from "@/components/variant-manager";
+import { ColorVisualManager } from "@/components/color-visual-manager";
 import {
     Card,
     CardContent,
@@ -25,9 +28,9 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateCarAction } from "@/actions/cars";
-import { Car } from "@/lib/store";
+import type { Car } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 export default function AdminCarEditClient({ car }: { car: Car }) {
     const router = useRouter();
@@ -36,7 +39,15 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
 
     // Bind the id to the action
     const updateCarWithId = updateCarAction.bind(null, car.id);
-    const specs = car.specs ? JSON.parse(car.specs) : {};
+
+    // Local state for Master Colors so VariantManager can see them in real-time
+    const [masterColors, setMasterColors] = useState(() => {
+        try {
+            return typeof car.colors === 'string' ? JSON.parse(car.colors || "[]") : (car.colors || []);
+        } catch {
+            return [];
+        }
+    });
 
     return (
         <motion.form
@@ -46,6 +57,14 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                 e.preventDefault();
                 setIsSaving(true);
                 const formData = new FormData(e.currentTarget);
+                const name = (formData.get("name") as string || "").trim();
+                const description = (formData.get("description") as string || "").trim();
+
+                if (!name || !description) {
+                    alert("Mohon lengkapi Nama Model dan Deskripsi pada tab 'Informasi & Varian'.");
+                    setIsSaving(false);
+                    return;
+                }
 
                 try {
                     const result = await updateCarWithId(formData);
@@ -64,7 +83,6 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
             }}
             className="max-w-5xl mx-auto space-y-8 pb-32"
         >
-            {/* Header */}
             {/* Sticky Header */}
             <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md rounded-b-2xl py-6 mb-8 border-b border-slate-200 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
@@ -92,33 +110,19 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                         <Button
                             type="submit"
                             disabled={isSaving}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11 rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold group"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11 rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold group flex items-center gap-2"
                         >
-                            <AnimatePresence mode="wait">
-                                {isSaving ? (
-                                    <motion.div
-                                        key="saving"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>Menyimpan...</span>
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        key="save"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <Save className="h-4 w-4" />
-                                        <span>Simpan Perubahan</span>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            {isSaving ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>Menyimpan...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    <span>Simpan Unit</span>
+                                </>
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -132,33 +136,30 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                             <TabsList className="bg-transparent gap-1">
                                 <TabsTrigger value="info" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
                                     <Info className="w-4 h-4 mr-2" />
-                                    Informasi
+                                    Informasi & Varian
                                 </TabsTrigger>
                                 <TabsTrigger value="media" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
                                     <ImageIcon className="w-4 h-4 mr-2" />
-                                    Visual & Media
-                                </TabsTrigger>
-                                <TabsTrigger value="specs" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm px-4">
-                                    <FileText className="w-4 h-4 mr-2" />
-                                    Spesifikasi
+                                    Visual & Gallery
                                 </TabsTrigger>
                             </TabsList>
                         </div>
 
                         <TabsContent value="info" forceMount className="space-y-8 mt-0 focus-visible:outline-none data-[state=inactive]:hidden">
+                            {/* 1. Basic Info */}
                             <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
                                 <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Info className="h-4 w-4 text-blue-600" />
-                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Informasi Utama</CardTitle>
+                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Informasi Unit</CardTitle>
                                     </div>
-                                    <CardDescription className="text-xs font-medium text-slate-500">Perbarui spesifikasi utama kendaraan jika ada perubahan.</CardDescription>
+                                    <CardDescription className="text-xs font-medium text-slate-500">Data utama seperti nama, harga mulai, dan deskripsi.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nama Model</label>
-                                            <Input name="name" required defaultValue={car.name} placeholder="Contoh: Honda Civic RS Turbo" className="h-11 rounded-lg border-slate-200 font-medium text-slate-900 focus-visible:ring-blue-500" />
+                                            <Input name="name" defaultValue={car.name} placeholder="Contoh: Honda Civic RS Turbo" className="h-11 rounded-lg border-slate-200 font-medium text-slate-900 focus-visible:ring-blue-500" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge (Opsional)</label>
@@ -184,15 +185,26 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Harga OTR Mulai Dari</label>
                                             <div className="relative">
                                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-600 text-xs">IDR</span>
-                                                <Input name="price" required type="number" defaultValue={car.price} placeholder="0" className="h-11 rounded-lg border-slate-200 pl-12 font-bold text-slate-900 focus-visible:ring-blue-500" />
+                                                <Input name="price" type="number" defaultValue={isNaN(Number(car.price)) ? 0 : car.price} placeholder="0" className="h-11 rounded-lg border-slate-200 pl-12 font-bold text-slate-900 focus-visible:ring-blue-500" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi & Keunggulan</label>
-                                        <textarea name="description" required defaultValue={car.description} className="w-full min-h-[150px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" placeholder="Jelaskan fitur utama dan promo mobil ini..." />
+                                        <textarea name="description" defaultValue={car.description} className="w-full min-h-[120px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" placeholder="Jelaskan fitur utama dan promo mobil ini..." />
                                     </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* 2. Variant Manager */}
+                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                                <CardContent className="p-6">
+                                    <VariantManager
+                                        name="variants"
+                                        defaultValue={JSON.stringify((car as any).variants || [])}
+                                        globalColors={masterColors}
+                                    />
                                 </CardContent>
                             </Card>
                         </TabsContent>
@@ -204,14 +216,46 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                                         <ImageIcon className="h-4 w-4 text-blue-600" />
                                         <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Media & Visual</CardTitle>
                                     </div>
-                                    <CardDescription className="text-xs font-medium text-slate-500">Thumbnail dan Youtube video review.</CardDescription>
+                                    <CardDescription className="text-xs font-medium text-slate-500">Upload thumbnail, gallery, dan warna master untuk dipilih di varian.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Thumbnail (Utama)</label>
-                                        <ImageUpload name="thumbnail" defaultValue={car.thumbnail} recommendation="1200 x 800 px (Rasio 3:2)" />
+                                <CardContent className="p-6 space-y-8">
+                                    {/* Master Color List */}
+                                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <Paintbrush className="w-4 h-4 text-blue-600" />
+                                            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Registrasi Master Warna</h3>
+                                        </div>
+                                        <p className="text-[10px] text-slate-500 font-medium">Daftarkan semua pilihan warna mobil ini di sini dahulu, baru kemudian centang di tab "Informasi & Varian".</p>
+                                        <ColorVisualManager
+                                            name="colors"
+                                            value={masterColors}
+                                            onChange={(val) => setMasterColors(val)}
+                                        />
                                     </div>
-                                    <div className="space-y-4">
+
+                                    <div className="space-y-6 pt-6 border-t border-slate-100">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Thumbnail (Utama)</label>
+                                            <ImageUpload name="thumbnail" defaultValue={car.thumbnail} recommendation="1200 x 800 px (Rasio 3:2)" />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                            <GalleryManager
+                                                name="gallery"
+                                                defaultValue={car.gallery}
+                                                label="Gallery Eksterior"
+                                                description="Foto eksterior mobil."
+                                            />
+                                            <GalleryManager
+                                                name="interiorGallery"
+                                                defaultValue={(car as any).interiorGallery || "[]"}
+                                                label="Gallery Interior"
+                                                description="Foto kenyamanan kabin."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-8 border-t border-slate-100">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Youtube Review Video (URL)</label>
                                             <div className="relative">
@@ -220,99 +264,17 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Link E-Katalog (Google Drive/PDF)</label>
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Link E-Katalog (Drive/PDF)</label>
                                             <div className="relative">
                                                 <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-600" />
                                                 <Input name="catalogUrl" defaultValue={car.catalogUrl || ""} placeholder="https://drive.google.com/..." className="h-11 rounded-lg border-slate-200 pl-12 font-medium text-slate-900 focus-visible:ring-blue-500" />
                                             </div>
-                                            <p className="text-[10px] text-slate-400 font-medium">Link ini akan digunakan khusus untuk tombol "Unduh Katalog" di halaman unit ini.</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="specs" forceMount className="space-y-8 mt-0 focus-visible:outline-none data-[state=inactive]:hidden">
-                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <FileText className="h-4 w-4 text-blue-600" />
-                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Spesifikasi Teknis</CardTitle>
-                                    </div>
-                                    <CardDescription className="text-xs font-medium text-slate-500">Detail spesifikasi mesin dan performa kendaraan.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Kapasitas Mesin</label>
-                                            <Input name="spec_engine_capacity" defaultValue={specs["Engine Capacity"]} placeholder="e.g. 1498 cc" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tipe Mesin</label>
-                                            <Input name="spec_engine_type" defaultValue={specs["Engine Type"]} placeholder="e.g. 1.5L DOHC VTEC Turbo" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Transmisi</label>
-                                            <Select name="spec_transmission" defaultValue={specs["Transmission"] || "CVT"}>
-                                                <SelectTrigger className="h-11 rounded-lg border-slate-200 bg-white font-medium text-slate-900">
-                                                    <SelectValue placeholder="Pilih Transmisi" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="CVT">CVT</SelectItem>
-                                                    <SelectItem value="AT">Automatic (AT)</SelectItem>
-                                                    <SelectItem value="MT">Manual (MT)</SelectItem>
-                                                    <SelectItem value="e-CVT">e-CVT (Hybrid)</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Bahan Bakar</label>
-                                            <Select name="spec_fuel_type" defaultValue={specs["Fuel Type"] || "Bensin"}>
-                                                <SelectTrigger className="h-11 rounded-lg border-slate-200 bg-white font-medium text-slate-900">
-                                                    <SelectValue placeholder="Pilih Bahan Bakar" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Bensin">Bensin (Petrol)</SelectItem>
-                                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                                    <SelectItem value="Electric">Electric (EV)</SelectItem>
-                                                    <SelectItem value="Diesel">Diesel</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tenaga Maksimum</label>
-                                            <Input name="spec_max_power" defaultValue={specs["Max Power"]} placeholder="e.g. 121 PS / 6600 rpm" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Torsi Maksimum</label>
-                                            <Input name="spec_max_torque" defaultValue={specs["Max Torque"]} placeholder="e.g. 145 Nm / 4300 rpm" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tahun Pembuatan</label>
-                                            <Input name="spec_year" defaultValue={specs["Year"]} placeholder="e.g. 2024" className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Kapasitas Kursi</label>
-                                            <Input name="spec_seating_capacity" defaultValue={specs["Seating Capacity"]} placeholder="e.g. 5 Penumpang" className="h-11 rounded-lg border-slate-200 font-medium" />
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
                         </TabsContent>
                     </Tabs>
-
-                    <input type="hidden" name="gallery" value={car.gallery} />
-                    <input type="hidden" name="specs" value={car.specs || "{}"} />
-                    <input type="hidden" name="colors" value={car.colors || "[]"} />
                 </div>
 
                 {/* Right: Publish Status */}
@@ -354,6 +316,6 @@ export default function AdminCarEditClient({ car }: { car: Car }) {
                     </div>
                 </div>
             </div>
-        </motion.form>
+        </motion.form >
     );
 }

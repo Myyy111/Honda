@@ -15,11 +15,19 @@ const montserrat = Montserrat({
   weight: ["700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "AutoPremium | Jual Beli Mobil Bekas & Baru Berkualitas",
-  description: "Dapatkan mobil impian Anda dengan harga terbaik dan kualitas terjamin hanya di AutoPremium. Cicilan ringan dan proses cepat.",
-  keywords: "jual mobil, mobil bekas, mobil baru, dealer mobil, jakarta, showroom mobil",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  const s = settings.reduce((acc, curr) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return {
+    title: s.meta_title || "Autoland | Dealer Resmi Mobil Honda Indonesia",
+    description: s.meta_description || "Dapatkan mobil Honda impian Anda dengan harga terbaik dan layanan resmi terpercaya hanya di Autoland. Cicilan ringan, proses cepat, dan garansi resmi.",
+    keywords: "Honda, jual mobil Honda, dealer Honda, Autoland, HR-V, CR-V, Civic, Brio, mobil baru Jakarta",
+  };
+}
 
 import { getSettings } from "@/lib/store";
 

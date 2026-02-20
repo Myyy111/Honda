@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Save, Globe, Phone, MapPin, Instagram, Facebook, Monitor, Layout, CheckCircle2, AlertCircle, Loader2, Image as ImageIcon, Type, FileText, Megaphone } from "lucide-react";
+import { Save, Globe, Phone, MapPin, Instagram, Facebook, Monitor, Layout, CheckCircle2, AlertCircle, Loader2, Image as ImageIcon, Type, FileText, Megaphone, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -122,7 +122,7 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
 
             <Tabs defaultValue="general" className="w-full space-y-8">
                 <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 inline-flex">
-                    <TabsList className="grid w-full grid-cols-3 h-auto bg-transparent gap-2">
+                    <TabsList className="grid w-full grid-cols-4 h-auto bg-transparent gap-2">
                         <TabsTrigger value="general" className="data-[state=active]:bg-white data-[state=active]:shadow-sm py-2.5 px-6 rounded-lg text-sm font-medium transition-all">
                             <Globe className="w-4 h-4 mr-2" />
                             Umum & Identitas
@@ -133,7 +133,11 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                         </TabsTrigger>
                         <TabsTrigger value="pages" className="data-[state=active]:bg-white data-[state=active]:shadow-sm py-2.5 px-6 rounded-lg text-sm font-medium transition-all">
                             <FileText className="w-4 h-4 mr-2" />
-                            Header Halaman Lain
+                            Header
+                        </TabsTrigger>
+                        <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:shadow-sm py-2.5 px-6 rounded-lg text-sm font-medium transition-all">
+                            <BookOpen className="w-4 h-4 mr-2" />
+                            Konten Detail
                         </TabsTrigger>
                     </TabsList>
                 </div>
@@ -152,25 +156,63 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                             <CardContent className="p-6 space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nama Dealer (Brand)</label>
-                                    <Input name="site_name" defaultValue={initialSettings.site_name || "AutoPremium"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    <Input name="site_name" defaultValue={initialSettings.site_name || "Auto"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                 </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Logo Website (Default)</label>
+                                        {initialSettings.site_logo && initialSettings.site_logo !== "" && (
+                                            <div className="mb-3 p-2 bg-slate-100 rounded-lg overflow-hidden h-16 w-fit relative border border-slate-200 shadow-sm">
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img src={initialSettings.site_logo} alt="Site Logo" className="h-full w-auto object-contain" />
+                                            </div>
+                                        )}
+                                        <Input type="file" name="site_logo" accept="image/*" className="h-11 py-2 rounded-lg border-slate-200 font-medium file:bg-blue-50 file:text-blue-700 file:border-0 file:rounded-md file:px-3 file:text-xs file:font-bold" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Logo Website (Versi Terang)</label>
+                                        {initialSettings.site_logo_light && initialSettings.site_logo_light !== "" && (
+                                            <div className="mb-3 p-2 bg-slate-900 rounded-lg overflow-hidden h-16 w-fit relative border border-white/10 shadow-sm">
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img src={initialSettings.site_logo_light} alt="Site Logo Light" className="h-full w-auto object-contain" />
+                                            </div>
+                                        )}
+                                        <Input type="file" name="site_logo_light" accept="image/*" className="h-11 py-2 rounded-lg border-slate-200 font-medium file:bg-slate-100 file:text-slate-700 file:border-0 file:rounded-md file:px-3 file:text-xs file:font-bold" />
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-slate-400 font-medium px-1">
+                                    <span className="font-bold text-blue-600">Saran:</span> Gunakan format <span className="font-bold">PNG Transparan</span>. Upload "Versi Terang" (teks putih/terang) untuk ditampilkan di atas background gelap (seperti di Hero atau Mobile Menu).
+                                </p>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Highlight Brand (Warna)</label>
-                                    <Input name="site_name_highlight" defaultValue={initialSettings.site_name_highlight || "Honda"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    <Input name="site_name_highlight" defaultValue={initialSettings.site_name_highlight || "land"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">No. WhatsApp</label>
-                                        <Input name="whatsapp_number" defaultValue={initialSettings.whatsapp_number || "628123456789"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                        <Input name="whatsapp_number" defaultValue={initialSettings.whatsapp_number || "6285863162206"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">No. Telepon</label>
-                                        <Input name="phone_number" defaultValue={initialSettings.phone_number || "+62 812-3456-7890"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                        <Input name="phone_number" defaultValue={initialSettings.phone_number || "+62 858-6316-2206"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email Resmi</label>
+                                    <Input name="email" defaultValue={initialSettings.email || "hondaachmad@gmail.com"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                                <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Alamat Dealer</label>
-                                    <textarea name="address" defaultValue={initialSettings.address || "Jl. Raya Otomotif No. 88, Jakarta Selatan"} className="w-full min-h-[100px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                    <textarea
+                                        name="address"
+                                        defaultValue={
+                                            (initialSettings.address && initialSettings.address !== "Jl. Raya Otomotif No. 88, Jakarta Selatan")
+                                                ? initialSettings.address
+                                                : "Honda Autoland Kelapa Gading, Jl. Boulevard Bar. Raya No.3, RW.5, Klp. Gading"
+                                        }
+                                        className="w-full min-h-[100px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500"
+                                    />
                                 </div>
                             </CardContent>
                         </Card>
@@ -193,6 +235,23 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Facebook URL</label>
                                         <Input name="facebook_url" defaultValue={initialSettings.facebook_url || "#"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="space-y-2 pt-4 border-t border-slate-100">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide text-blue-600">Link E-Katalog (Google Drive)</label>
+                                        <Input name="global_catalog_url" defaultValue={initialSettings.global_catalog_url || ""} placeholder="https://drive.google.com/..." className="h-11 rounded-lg border-blue-200 bg-blue-50/50 font-medium text-blue-900" />
+                                        <p className="text-[10px] text-slate-400 font-medium px-1">Link ini akan digunakan pada tombol "Unduh Katalog" jika unit mobil tidak memiliki katalog khusus.</p>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                                        <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">SEO & Meta Tags</label>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Meta Title (Browser Tab)</label>
+                                            <Input name="meta_title" defaultValue={initialSettings.meta_title || "Autoland | Dealer Resmi Mobil Honda Indonesia"} className="h-10 text-xs" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Meta Description</label>
+                                            <textarea name="meta_description" defaultValue={initialSettings.meta_description || "Dapatkan mobil Honda impian Anda dengan harga terbaik dan layanan resmi terpercaya hanya di Autoland."} className="w-full min-h-[60px] rounded-lg border border-slate-200 bg-white p-3 text-[10px]" />
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -258,15 +317,15 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
 
                 <TabsContent value="home" className="space-y-8 mt-0 focus-visible:outline-none">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Hero Section */}
+                        {/* Hero Section - Ultra Clean */}
                         <div className="lg:col-span-2">
                             <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
                                 <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <ImageIcon className="h-4 w-4 text-blue-600" />
-                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Konten Beranda (Hero)</CardTitle>
+                                        <ImageIcon className="h-4 w-4 text-slate-600" />
+                                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Hero Section (Ultra Minimalist)</CardTitle>
                                     </div>
-                                    <CardDescription className="text-xs font-medium text-slate-500">Edit teks utama di halaman depan.</CardDescription>
+                                    <CardDescription className="text-xs font-medium text-slate-500">Kontrol judul, subtitle, dan benefit list (maksimal 4 poin singkat).</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -277,24 +336,31 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul (Putih)</label>
-                                                    <Input name="hero_title_white" defaultValue={initialSettings.hero_title_white || "New Honda"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Utama</label>
+                                                    <Input name="hero_title_main" defaultValue={initialSettings.hero_title_main || "Dealer Resmi Honda"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul (Highlight)</label>
-                                                    <Input name="hero_title_red" defaultValue={initialSettings.hero_title_red || "Collection"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Highlight</label>
+                                                    <Input name="hero_title_highlight" defaultValue={initialSettings.hero_title_highlight || "Autoland"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Subtitle Hero</label>
-                                                <textarea name="hero_subtitle" defaultValue={initialSettings.hero_subtitle || "Hadirkan standar kualitas tertinggi untuk kepuasan berkendara Anda."} className="w-full min-h-[100px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Subtitle</label>
+                                                <Input name="hero_subtitle" defaultValue={initialSettings.hero_subtitle || "Jakarta - Melayani Seluruh Indonesia"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                                <p className="text-[10px] text-slate-400 font-medium px-1">Teks di bawah judul utama</p>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Label Tombol WA</label>
+                                                    <Input name="hero_cta_whatsapp" defaultValue={initialSettings.hero_cta_whatsapp || "Konsultasi Gratis"} className="h-10 rounded-lg border-slate-200 text-xs font-bold" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Label Tombol Katalog</label>
+                                                    <Input name="hero_cta_catalog" defaultValue={initialSettings.hero_cta_catalog || "Lihat Katalog"} className="h-10 rounded-lg border-slate-200 text-xs font-bold" />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Video Promo (YT URL)</label>
-                                                <Input name="hero_video_url" defaultValue={initialSettings.hero_video_url || ""} className="h-11 rounded-lg border-slate-200 font-medium" />
-                                            </div>
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Hero Backdrop Image</label>
                                                 {initialSettings.hero_image_url && initialSettings.hero_image_url !== "" && (
@@ -308,6 +374,32 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                                 </p>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    {/* Benefit List - Simple */}
+                                    <div className="pt-4 border-t border-slate-100">
+                                        <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-4">Benefit List (4 Poin Singkat)</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {[1, 2, 3, 4].map((i) => (
+                                                <div key={i} className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Benefit {i}</label>
+                                                    <Input
+                                                        name={`hero_benefit_${i}`}
+                                                        defaultValue={initialSettings[`hero_benefit_${i}`] || (
+                                                            i === 1 ? "Proses Kredit 1 Hari" :
+                                                                i === 2 ? "DP Mulai 10%" :
+                                                                    i === 3 ? "Cashback & Bonus Aksesoris" :
+                                                                        "Trade-In Harga Tinggi"
+                                                        )}
+                                                        className="h-10 rounded-lg border-slate-200 font-medium text-sm"
+                                                        placeholder="Benefit singkat"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 font-medium px-1 mt-3">
+                                            <span className="font-bold text-orange-600">Tips:</span> Gunakan kalimat pendek (max 5 kata) untuk tampilan lebih clean
+                                        </p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -327,11 +419,11 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                     <div key={i} className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nilai Stat {i}</label>
-                                            <Input name={`stats_${i}_value`} defaultValue={initialSettings[`stats_${i}_value`] || (i === 1 ? "250+" : i === 2 ? "Official" : i === 3 ? "100%" : "24/7")} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                            <Input name={`stats_${i}_value`} defaultValue={initialSettings[`stats_${i}_value`] || (i === 1 ? "500+" : i === 2 ? "Official" : i === 3 ? "4.9/5" : "24/7")} className="h-11 rounded-lg border-slate-200 font-medium" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Stat {i}</label>
-                                            <Input name={`stats_${i}_label`} defaultValue={initialSettings[`stats_${i}_label`] || (i === 1 ? "Units Sold" : i === 2 ? "Authorized Dealer" : i === 3 ? "Satisfaction" : "Premium Support")} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                            <Input name={`stats_${i}_label`} defaultValue={initialSettings[`stats_${i}_label`] || (i === 1 ? "Units Sold" : i === 2 ? "Authorized Dealer" : i === 3 ? "Customer Rating" : "Sales Support")} className="h-11 rounded-lg border-slate-200 font-medium" />
                                         </div>
                                     </div>
                                 ))}
@@ -377,6 +469,108 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                             </CardContent>
                         </Card>
 
+                        {/* Unit Ready Stock */}
+                        <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                            <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Monitor className="h-4 w-4 text-blue-600" />
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Section Ready Stock</CardTitle>
+                                </div>
+                                <CardDescription className="text-xs font-medium text-slate-500">Edit teks bagian daftar mobil di beranda.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge Section</label>
+                                    <Input name="ready_stock_badge" defaultValue={initialSettings.ready_stock_badge || "Honda Terbaru 2026"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Utama</label>
+                                        <Input name="ready_stock_title_main" defaultValue={initialSettings.ready_stock_title_main || "Unit"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Highlight</label>
+                                        <Input name="ready_stock_title_highlight" defaultValue={initialSettings.ready_stock_title_highlight || "Ready Stock"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi</label>
+                                    <textarea name="ready_stock_description" defaultValue={initialSettings.ready_stock_description || "Proses cepat, harga terbaik, unit siap kirim"} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol CTA</label>
+                                    <Input name="ready_stock_cta" defaultValue={initialSettings.ready_stock_cta || "Tanya Harga Terbaik"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Program Promo Section */}
+                        <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                            <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Megaphone className="h-4 w-4 text-orange-600" />
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Section Program Promo</CardTitle>
+                                </div>
+                                <CardDescription className="text-xs font-medium text-slate-500">Edit teks bagian promo di beranda.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge Section</label>
+                                    <Input name="promo_badge" defaultValue={initialSettings.promo_badge || "Penawaran Spesial"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Utama</label>
+                                        <Input name="promo_title_main" defaultValue={initialSettings.promo_title_main || "Promo"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Highlight</label>
+                                        <Input name="promo_title_highlight" defaultValue={initialSettings.promo_title_highlight || "Terbatas"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi</label>
+                                    <textarea name="promo_description" defaultValue={initialSettings.promo_description || "Dapatkan penawaran terbaik bulan ini. Stok terbatas, segera hubungi kami sebelum kehabisan."} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol Promo</label>
+                                    <Input name="promo_cta_label" defaultValue={initialSettings.promo_cta_label || "Dapatkan Promo Ini"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Video Highlight Section */}
+                        <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                            <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Monitor className="h-4 w-4 text-red-600" />
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Section Video Highlight</CardTitle>
+                                </div>
+                                <CardDescription className="text-xs font-medium text-slate-500">Tampilkan video YouTube di halaman beranda.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">YouTube Video URL</label>
+                                    <Input name="home_video_url" defaultValue={initialSettings.home_video_url || ""} placeholder="https://www.youtube.com/watch?v=..." className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    <p className="text-[10px] text-slate-400 font-medium px-1">Pastikan URL valid. Section ini akan otomatis hilang jika link kosong.</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Utama</label>
+                                        <Input name="home_video_title_main" defaultValue={initialSettings.home_video_title_main || "Lihat Performa"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Highlight</label>
+                                        <Input name="home_video_title_highlight" defaultValue={initialSettings.home_video_title_highlight || "Terbaik"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi Video</label>
+                                    <textarea name="home_video_description" defaultValue={initialSettings.home_video_description || "Saksikan kecanggihan teknologi dan kenyamanan berkendara yang ditawarkan oleh lini kendaraan terbaru kami."} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* About Section on Home */}
                         <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
                             <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
@@ -389,7 +583,7 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                             <CardContent className="p-6 space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge Section</label>
-                                    <Input name="about_badge" defaultValue={initialSettings.about_badge || "About AutoPremium"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    <Input name="about_badge" defaultValue={initialSettings.about_badge || "About Autoland"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -444,23 +638,23 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                     <CardDescription className="text-xs font-medium text-slate-500">Edit teks bagian "DRIVE The Power".</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul CTA</label>
-                                            <Input name="cta_title_main" defaultValue={initialSettings.cta_title_main || "DRIVE"} className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Highlight CTA</label>
-                                            <Input name="cta_title_highlight" defaultValue={initialSettings.cta_title_highlight || "The Power"} className="h-11 rounded-lg border-slate-200 font-medium" />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul CTA</label>
+                                        <Input name="cta_title" defaultValue={initialSettings.cta_title || "Butuh Simulasi Kredit?"} className="h-11 rounded-lg border-slate-200 font-medium" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi CTA</label>
-                                        <textarea name="cta_description" defaultValue={initialSettings.cta_description || "Tim spesialis kami siap membantu Anda menemukan model yang sempurna sesuai kebutuhan dan budget Anda."} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                        <textarea name="cta_description" defaultValue={initialSettings.cta_description || "Tim spesialis kami siap membantu menghitungkan skema kredit terbaik yang sesuai dengan budget Anda. Konsultasi gratis tanpa syarat."} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol Utama</label>
-                                        <Input name="cta_button_primary" defaultValue={initialSettings.cta_button_primary || "WhatsApp Us"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol Utama</label>
+                                            <Input name="cta_button_primary" defaultValue={initialSettings.cta_button_primary || "Hubungi Sales"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol Kedua</label>
+                                            <Input name="cta_button_secondary" defaultValue={initialSettings.cta_button_secondary || "Lihat Unit Ready"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -640,6 +834,139 @@ export default function AdminSettingsClient({ initialSettings }: AdminSettingsCl
                                 </div>
                             </CardContent>
                         </Card>
+                    </div>
+                </TabsContent>
+                <TabsContent value="content" className="space-y-8 mt-0 focus-visible:outline-none">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Detail Halaman Tentang Kami */}
+                        <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                            <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Detail Halaman Tentang Kami</CardTitle>
+                                <CardDescription className="text-xs font-medium text-slate-500">Edit teks detail di halaman /tentang.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Story Title</label>
+                                        <Input name="about_story_title" defaultValue={initialSettings.about_story_title || "Dedikasi Untuk"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Story Highlight</label>
+                                        <Input name="about_story_highlight" defaultValue={initialSettings.about_story_highlight || "Kepuasan Anda"} className="h-11 rounded-lg border-slate-200 font-medium text-red-600" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Short Description (Heading)</label>
+                                    <textarea name="about_story_description" defaultValue={initialSettings.about_story_description || "Kami hadir bukan sekadar sebagai dealer mobil, tetapi sebagai partner terpercaya yang membantu Anda mewujudkan impian memiliki kendaraan Honda terbaik dengan pengalaman yang menyenangkan."} className="w-full min-h-[80px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Detailed Story (Paragraph)</label>
+                                    <textarea name="about_story_detail" defaultValue={initialSettings.about_story_detail || "Sejak didirikan, kami telah melayani ribuan pelanggan dengan standar pelayanan tertinggi. Fokus kami adalah transparansi, kemudahan proses, dan hubungan jangka panjang dengan setiap pelanggan."} className="w-full min-h-[100px] rounded-lg border border-slate-200 bg-white p-4 font-medium text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500" />
+                                </div>
+
+                                <div className="space-y-2 pt-4 border-t border-slate-100">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Label Tombol CTA (Tentang)</label>
+                                    <Input name="about_cta_label" defaultValue={initialSettings.about_cta_label || "Hubungi Kami"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="space-y-8">
+                            {/* Statistik Pencapaian (Tentang) */}
+                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                                <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Statistik Pencapaian</CardTitle>
+                                    <CardDescription className="text-xs font-medium text-slate-500">Angka pencapaian di halaman /tentang.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-6">
+                                    {[1, 2].map((i) => (
+                                        <div key={i} className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nilai Stat {i}</label>
+                                                <Input name={`about_stat_${i}_value`} defaultValue={initialSettings[`about_stat_${i}_value`] || (i === 1 ? "1000+" : "98%")} className="h-10 rounded-lg border-slate-200 font-bold" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Label Stat {i}</label>
+                                                <Input name={`about_stat_${i}_label`} defaultValue={initialSettings[`about_stat_${i}_label`] || (i === 1 ? "Unit Terjual" : "Customer Puas")} className="h-10 rounded-lg border-slate-200 text-xs" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+
+                            {/* Visi & Misi Header */}
+                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                                <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Header Visi & Misi</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Badge</label>
+                                        <Input name="about_mission_badge" defaultValue={initialSettings.about_mission_badge || "Core Values"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul</label>
+                                            <Input name="about_mission_title_main" defaultValue={initialSettings.about_mission_title_main || "Visi &"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Highlight</label>
+                                            <Input name="about_mission_title_highlight" defaultValue={initialSettings.about_mission_title_highlight || "Misi"} className="h-11 rounded-lg border-slate-200 font-medium text-red-600" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Deskripsi</label>
+                                        <textarea name="about_mission_description" defaultValue={initialSettings.about_mission_description || "Landasan kami dalam memberikan pelayanan terbaik setiap hari."} className="w-full min-h-[60px] rounded-lg border border-slate-200 bg-white p-3 text-xs" />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-100">
+                                        {[
+                                            { id: 'vision', label: 'Visi' },
+                                            { id: 'mission', label: 'Misi' },
+                                            { id: 'commitment', label: 'Komitmen' }
+                                        ].map((item) => (
+                                            <div key={item.id} className="space-y-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                                <label className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{item.label}</label>
+                                                <Input name={`about_${item.id}_title`} defaultValue={initialSettings[`about_${item.id}_title`] || item.label} className="h-9 text-xs font-bold" />
+                                                <textarea name={`about_${item.id}_desc`} defaultValue={initialSettings[`about_${item.id}_desc`] || ""} placeholder={`Deskripsi ${item.label}`} className="w-full min-h-[50px] rounded-lg border border-slate-200 bg-white p-2 text-[10px]" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Why Choose Us (Tentang) */}
+                        <div className="lg:col-span-2">
+                            <Card className="border border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                                <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+                                    <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-900">Benefit Dealer (Kenapa Memilih Kami)</CardTitle>
+                                    <CardDescription className="text-xs font-medium text-slate-500">Edit list keuntungan di halaman /tentang.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Judul Section</label>
+                                        <Input name="about_why_title" defaultValue={initialSettings.about_why_title || "Kenapa Memilih Kami?"} className="h-11 rounded-lg border-slate-200 font-medium" />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {[1, 2, 3, 4].map((i) => (
+                                            <div key={i} className="p-4 bg-slate-50 rounded-lg border border-slate-100 space-y-3">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Point {i} Judul</label>
+                                                    <Input name={`about_why_${i}_title`} defaultValue={initialSettings[`about_why_${i}_title`] || (i === 1 ? "Unit Ready Stock" : i === 2 ? "Harga Kompetitif" : i === 3 ? "Proses Cepat" : "Aftersales Terjamin")} className="h-10 rounded-lg border-slate-200 font-bold" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Point {i} Deskripsi</label>
+                                                    <Input name={`about_why_${i}_desc`} defaultValue={initialSettings[`about_why_${i}_desc`] || (i === 1 ? "Pilihan unit lengkap dan siap kirim tanpa indent lama." : i === 2 ? "Penawaran harga terbaik dengan diskon dan bonus menarik." : i === 3 ? "Dibantu sales profesional hingga approve leasing." : "Didukung bengkel resmi dan layanan darurat 24 jam.")} className="h-10 rounded-lg border-slate-200 text-xs" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
                 </TabsContent>
             </Tabs>

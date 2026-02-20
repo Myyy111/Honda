@@ -25,9 +25,9 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const siteName = settings?.site_name || "Auto";
-    const highlight = settings?.site_name_highlight || "Premium";
-    const whatsapp = settings?.whatsapp_number || "628123456789";
+    const siteName = settings?.site_name || "Honda";
+    const highlight = settings?.site_name_highlight || "Autoland";
+    const whatsapp = settings?.whatsapp_number || "6285863162206";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -56,19 +56,70 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
                 isScrolled ? "py-1 md:py-2" : "py-2 md:py-4"
             )}
         >
-            <div className="w-full px-6 md:px-12">
+            <div className="w-full px-4 md:px-12">
                 <div className={cn(
-                    "flex items-center justify-between transition-all duration-700 h-16 md:h-20 rounded-2xl border",
+                    "flex items-center justify-between transition-all duration-700 h-14 md:h-20 rounded-2xl border",
                     isScrolled
-                        ? "bg-white/90 backdrop-blur-xl border-slate-200/50 shadow-sm px-6 md:px-8"
-                        : "bg-transparent border-transparent px-4"
+                        ? "bg-white/80 backdrop-blur-xl border-slate-200/50 shadow-sm px-6 md:px-8"
+                        : "bg-white/5 backdrop-blur-sm border-white/10 px-6"
                 )}>
-                    {/* Logo: Clean and Professional */}
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <HondaLogo className={cn("h-8 w-8 transition-colors duration-500", isScrolled ? "text-red-600" : "text-white group-hover:text-red-600")} />
+                    {/* Mobile App Bar Header: Centered Logo for App-like feel */}
+                    <div className="flex lg:hidden items-center justify-between w-full">
+                        <div className="w-10 md:w-12 h-10 md:w-12" /> {/* Spacer */}
+                        <Link href="/" className="flex items-center gap-2 group">
+                            {settings?.site_logo || settings?.site_logo_light ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={(!isScrolled ? settings.site_logo_light : settings.site_logo) || settings.site_logo || settings.site_logo_light}
+                                    alt={settings?.site_name || "Logo"}
+                                    className={cn(
+                                        "h-8 w-auto object-contain transition-all duration-500",
+                                        !isScrolled && !settings?.site_logo_light && "brightness-0 invert"
+                                    )}
+                                />
+                            ) : (
+                                <HondaLogo className={cn("h-7 w-7 transition-colors duration-500", isScrolled ? "text-red-600" : "text-white")} />
+                            )}
+                            <span className={cn(
+                                "font-black text-sm tracking-tighter uppercase",
+                                isScrolled ? "text-slate-900" : "text-white",
+                                (settings?.site_logo || settings?.site_logo_light) ? "hidden" : "block"
+                            )}>
+                                {siteName}<span className="text-red-600">{highlight}</span>
+                            </span>
+                        </Link>
+
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className={cn(
+                                "p-2.5 transition-all duration-500 rounded-xl bg-white/5 border border-white/10",
+                                isScrolled ? "text-slate-900" : "text-white"
+                            )}
+                            aria-label="Toggle Menu"
+                        >
+                            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </button>
+                    </div>
+
+                    {/* Desktop Logo */}
+                    <Link href="/" className="hidden lg:flex items-center gap-3 group">
+                        {settings?.site_logo || settings?.site_logo_light ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={(!isScrolled ? settings.site_logo_light : settings.site_logo) || settings.site_logo || settings.site_logo_light}
+                                alt={settings?.site_name || "Logo"}
+                                className={cn(
+                                    "h-10 w-auto object-contain transition-all duration-500",
+                                    !isScrolled && !settings?.site_logo_light && "brightness-0 invert"
+                                )}
+                            />
+                        ) : (
+                            <HondaLogo className={cn("h-8 w-8 transition-colors duration-500", isScrolled ? "text-red-600" : "text-white group-hover:text-red-600")} />
+                        )}
                         <span className={cn(
                             "font-black text-lg tracking-tighter transition-colors duration-500 uppercase",
-                            isScrolled ? "text-slate-900" : "text-white"
+                            isScrolled ? "text-slate-900" : "text-white",
+                            (settings?.site_logo || settings?.site_logo_light) ? "hidden" : "block"
                         )}>
                             {siteName}<span className="text-red-600">{highlight}</span>
                         </span>
@@ -117,17 +168,7 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
                         </Link>
                     </div>
 
-                    {/* Mobile Toggle */}
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className={cn(
-                            "lg:hidden p-3 transition-all duration-500 rounded-xl",
-                            isScrolled ? "text-slate-900 hover:bg-slate-50" : "text-white hover:bg-white/5"
-                        )}
-                        aria-label="Toggle Menu"
-                    >
-                        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                    </button>
+                    {/* Mobile Toggle removed and integrated to header above */}
                 </div>
             </div>
 
@@ -135,40 +176,97 @@ export function Navbar({ settings }: { settings?: Record<string, string> }) {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, x: "100%" }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: "100%" }}
-                        transition={{ type: "tween", duration: 0.3 }}
-                        className="fixed inset-0 z-[110] lg:hidden bg-slate-950 flex flex-col p-8 h-[100dvh]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[110] lg:hidden bg-white/10 backdrop-blur-2xl"
                     >
-                        <div className="flex justify-between items-center mb-16">
-                            <span className="font-bold text-white tracking-widest text-sm">MENU</span>
-                            <button onClick={() => setIsMobileMenuOpen(false)} className="text-white p-2 hover:bg-white/10 rounded-full transition-colors">
-                                <X className="h-6 w-6" />
-                            </button>
-                        </div>
-                        <div className="space-y-8 flex-1 overflow-y-auto">
-                            {NAV_LINKS.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={cn(
-                                        "block text-3xl font-black uppercase tracking-tighter transition-colors",
-                                        pathname === link.href ? "text-red-600" : "text-white hover:text-white/50"
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="absolute inset-y-0 right-0 w-[85%] bg-slate-950 flex flex-col shadow-2xl"
+                        >
+                            {/* Gradient Background Decoration */}
+                            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-red-600/10 via-transparent to-slate-900 pointer-events-none" />
+
+                            <div className="flex justify-between items-center p-8 relative z-10">
+                                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 group">
+                                    {settings?.site_logo || settings?.site_logo_light ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={settings.site_logo_light || settings.site_logo}
+                                            alt={settings?.site_name || "Logo"}
+                                            className={cn(
+                                                "h-7 w-auto object-contain",
+                                                !settings?.site_logo_light && "brightness-0 invert"
+                                            )}
+                                        />
+                                    ) : (
+                                        <HondaLogo className="h-6 w-6 text-red-600" />
                                     )}
-                                >
-                                    {link.name}
+                                    <span className={cn(
+                                        "font-black text-xs tracking-tighter uppercase text-white",
+                                        (settings?.site_logo || settings?.site_logo_light) ? "hidden" : "block"
+                                    )}>
+                                        {siteName}<span className="text-red-600">{highlight}</span>
+                                    </span>
                                 </Link>
-                            ))}
-                        </div>
-                        <div className="mt-auto pt-8 border-t border-white/10">
-                            <Link href={`https://wa.me/${whatsapp}`} target="_blank" onClick={() => setIsMobileMenuOpen(false)}>
-                                <Button className="w-full h-16 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/20">
-                                    WhatsApp Now
-                                </Button>
-                            </Link>
-                        </div>
+                                <button
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                                >
+                                    <X className="h-6 w-6" />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto px-8 py-4 relative z-10">
+                                <nav className="space-y-4">
+                                    {NAV_LINKS.map((link, i) => (
+                                        <motion.div
+                                            key={link.href}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.1 + i * 0.05 }}
+                                        >
+                                            <Link
+                                                href={link.href}
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={cn(
+                                                    "block py-4 border-b border-white/5 transition-all",
+                                                    pathname === link.href
+                                                        ? "text-4xl font-black text-red-600 tracking-tighter"
+                                                        : "text-3xl font-bold text-white/60 hover:text-white tracking-tighter"
+                                                )}
+                                            >
+                                                {link.name}
+                                                {pathname === link.href && (
+                                                    <span className="inline-block ml-4 h-2 w-2 rounded-full bg-red-600" />
+                                                )}
+                                            </Link>
+                                        </motion.div>
+                                    ))}
+                                </nav>
+                            </div>
+
+                            <div className="p-8 relative z-10 border-t border-white/5 bg-slate-950/50 backdrop-blur-md">
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Connect with Us</p>
+                                        <Link href={`https://wa.me/${whatsapp}`} target="_blank" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Button className="w-full h-16 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/20 gap-3 group">
+                                                <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
+                                                WhatsApp Consultant
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                    <p className="text-[9px] text-center text-slate-600 font-medium uppercase tracking-[0.3em]">
+                                        Honda Autoland © {new Date().getFullYear()}
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

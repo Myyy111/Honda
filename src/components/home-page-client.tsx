@@ -4,35 +4,38 @@ import { useState, useRef } from "react";
 import { Hero } from "@/components/hero";
 import { CarCard } from "@/components/car-card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Award, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ShieldCheck, Award, Zap, ChevronLeft, ChevronRight, Clock, Banknote, HeartHandshake, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
-import { Car, Testimonial } from "@/lib/store";
+import type { Car, Testimonial, Promotion } from "@/types";
+import { PromoPopup } from "@/components/promo-popup";
+import { VideoSection } from "@/components/video-section";
 
 interface HomePageClientProps {
     featuredCars: Car[];
     settings?: Record<string, string>;
     testimonials?: Testimonial[];
+    promotions?: Promotion[];
 }
 
 const HONDA_FEATURES = [
     {
-        icon: ShieldCheck,
-        title: "Honda Sensing",
-        description: "Teknologi keselamatan canggih dengan sistem deteksi dan pencegahan tabrakan otomatis untuk keamanan maksimal berkendara.",
+        icon: Clock,
+        title: "Proses Cepat & Mudah",
+        description: "Data dibantu sampai approve. Proses kredit fleksibel, transparan, dan tanpa ribet. Unit ready stock siap kirim.",
         color: "red",
     },
     {
-        icon: Award,
-        title: "Mesin VTEC",
-        description: "Teknologi mesin legendaris Honda yang menghadirkan performa optimal dengan efisiensi bahan bakar terbaik di kelasnya.",
+        icon: Banknote,
+        title: "Harga Terbaik",
+        description: "Dapatkan penawaran termurah dengan diskon maksimal, hitungan kredit termurah, dan bonus aksesoris melimpah.",
         color: "blue",
     },
     {
-        icon: Zap,
-        title: "Garansi Resmi",
-        description: "Semua unit dilengkapi garansi resmi Honda Indonesia dan riwayat perawatan lengkap dari dealer resmi.",
+        icon: HeartHandshake,
+        title: "Layanan Prioritas",
+        description: "Konsultasi unit 24 jam, test drive diantar ke rumah, dan layanan aftersales seumur hidup untuk ketenangan Anda.",
         color: "purple",
     },
 ];
@@ -67,30 +70,65 @@ const scaleIn: Variants = {
     }
 };
 
-export default function HomePageClient({ featuredCars, settings, testimonials }: HomePageClientProps) {
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [currentSlide, setCurrentSlide] = useState(1);
+export default function HomePageClient({ featuredCars, settings, testimonials, promotions }: HomePageClientProps) {
+    // Car Slider State
+    const carSliderRef = useRef<HTMLDivElement>(null);
+    const [currentCarSlide, setCurrentCarSlide] = useState(0);
 
-    const handleScroll = () => {
-        if (scrollContainerRef.current) {
-            const { scrollLeft, clientWidth } = scrollContainerRef.current;
-            const index = Math.round(scrollLeft / clientWidth) + 1;
-            setCurrentSlide(index);
-        }
+    // Testimonial Slider State
+    const testimonialRef = useRef<HTMLDivElement>(null);
+
+    const handleCarScroll = () => {
+        const container = carSliderRef.current;
+        if (!container || featuredCars.length === 0) return;
+
+        const scrollLeft = container.scrollLeft;
+        const cards = Array.from(container.children) as HTMLElement[];
+
+        let closestIndex = 0;
+        let minDistance = Infinity;
+
+        cards.forEach((card, index) => {
+            // Calculate distance between card position and scroll container's left edge
+            // 16 is the px-4 padding compensation
+            const distance = Math.abs(card.offsetLeft - 16 - scrollLeft);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestIndex = index;
+            }
+        });
+
+        setCurrentCarSlide(closestIndex);
     };
 
-    const scroll = (direction: "left" | "right") => {
-        if (scrollContainerRef.current) {
-            const { scrollLeft, clientWidth } = scrollContainerRef.current;
-            const scrollTo = direction === "left"
-                ? scrollLeft - clientWidth / 2
-                : scrollLeft + clientWidth / 2;
+    const scrollCar = (direction: "left" | "right") => {
+        const container = carSliderRef.current;
+        if (!container || featuredCars.length === 0) return;
 
-            scrollContainerRef.current.scrollTo({
-                left: scrollTo,
+        const nextIndex = direction === "left" ? currentCarSlide - 1 : currentCarSlide + 1;
+        if (nextIndex < 0 || nextIndex >= featuredCars.length) return;
+
+        const targetCard = container.children[nextIndex] as HTMLElement;
+        if (targetCard) {
+            container.scrollTo({
+                left: targetCard.offsetLeft - 16,
                 behavior: "smooth"
             });
         }
+    };
+
+    // Generic Scroll for Testimonials (Simple)
+    const scrollTestimonial = (direction: "left" | "right") => {
+        const container = testimonialRef.current;
+        if (!container) return;
+
+        const scrollAmount = 320; // Approx card width
+        const currentScroll = container.scrollLeft;
+
+        container.scrollTo({
+            left: direction === "left" ? currentScroll - scrollAmount : currentScroll + scrollAmount,
+            behavior: "smooth"
+        });
     };
 
     return (
@@ -98,31 +136,34 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
             <Hero settings={settings} />
 
 
-            {/* Featured Collection: Focus on Product */}
-            <section className="py-20 md:py-32 bg-slate-50/50">
+
+            {/* Unit Ready Stock: Sales-Focused */}
+            <section className="py-12 md:py-24 bg-white">
                 <div className="container mx-auto px-6">
                     <motion.div
-                        className="mb-24 text-center space-y-8"
+                        className="mb-10 md:mb-16 text-center space-y-6"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={fadeInUp}
                     >
-                        <div className="space-y-4">
-                            <p className="text-[11px] uppercase tracking-[0.4em] text-red-600 font-bold">
-                                Unit Honda Terbaru
+                        <div className="space-y-3">
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-red-600 font-semibold">
+                                {settings?.ready_stock_badge || "Honda Terbaru 2026"}
                             </p>
-                            <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase leading-[1.1]">
-                                Gress <span className="text-red-600">Collection</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight">
+                                {settings?.ready_stock_title_main || "Unit"} <span className="text-red-600">{settings?.ready_stock_title_highlight || "Ready Stock"}</span>
                             </h2>
+                            <p className="text-slate-500 text-sm max-w-xl mx-auto">
+                                {settings?.ready_stock_description || "Proses cepat, harga terbaik, unit siap kirim"}
+                            </p>
                         </div>
                         <div className="flex justify-center">
                             <Link href="/mobil">
                                 <Button
-                                    variant="outline"
-                                    className="border-slate-200 hover:border-red-600 text-slate-900 font-black h-14 px-10 rounded-xl text-xs uppercase tracking-widest transition-all duration-300 shadow-sm"
+                                    className="bg-red-600 hover:bg-red-700 text-white font-semibold h-12 px-8 rounded-lg text-sm transition-all duration-300 shadow-lg shadow-red-600/20"
                                 >
-                                    Lihat Katalog Honda Baru
+                                    {settings?.ready_stock_cta || "Tanya Harga Terbaik"}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </Link>
@@ -132,46 +173,47 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                     {/* Slider Component */}
                     <div className="relative group/slider">
                         <div
-                            ref={scrollContainerRef}
-                            onScroll={handleScroll}
-                            className="flex gap-6 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar px-4 -mx-4"
+                            ref={carSliderRef}
+                            onScroll={handleCarScroll}
+                            className="flex gap-4 md:gap-6 overflow-x-auto pb-8 md:pb-12 snap-x snap-mandatory no-scrollbar px-4 -mx-4"
                         >
                             {featuredCars.map((car) => (
-                                <div key={car.id} className="min-w-[85vw] md:min-w-[400px] lg:min-w-[450px] snap-center">
+                                <div key={car.id} className="w-[85vw] md:w-[500px] lg:w-[550px] snap-center flex-shrink-0">
                                     <CarCard car={car} whatsappNumber={settings?.whatsapp_number} />
                                 </div>
                             ))}
 
                             {featuredCars.length === 0 && (
-                                <div className="w-full py-20 text-center bg-white rounded-3xl border border-slate-100">
-                                    <p className="text-slate-400 font-bold uppercase tracking-widest">
-                                        No Featured Vehicles
+                                <div className="w-full py-20 text-center bg-slate-50 rounded-2xl border border-slate-100">
+                                    <p className="text-slate-400 font-semibold uppercase tracking-widest text-sm">
+                                        Tidak Ada Unit
                                     </p>
                                 </div>
                             )}
                         </div>
 
-                        {/* Refined Premium Slider Navigation */}
-                        <div className="flex flex-col items-center gap-8 mt-16">
-                            <div className="flex items-center gap-10">
+                        {/* Clean Slider Navigation */}
+                        <div className="flex flex-col items-center gap-6 mt-8 md:mt-12">
+                            <div className="flex items-center gap-8">
                                 <button
-                                    className="h-10 w-16 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition-all shadow-sm group"
-                                    onClick={() => scroll("left")}
+                                    className="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-black transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hidden md:flex"
+                                    onClick={() => scrollCar("left")}
+                                    disabled={currentCarSlide === 0}
                                 >
-                                    <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
+                                    <ChevronLeft className="h-5 w-5" />
                                 </button>
 
                                 <div className="flex flex-col items-center gap-2">
-                                    <span className="text-xl font-bold text-[#1A1A1A] tracking-widest tabular-nums uppercase">
-                                        {currentSlide} <span className="text-slate-300 mx-1">/</span> {featuredCars.length || 0}
+                                    <span className="text-lg font-semibold text-slate-900 tabular-nums">
+                                        {currentCarSlide + 1} <span className="text-slate-300 mx-1">/</span> {featuredCars.length || 0}
                                     </span>
-                                    {/* Progress Line Indicator */}
-                                    <div className="w-24 h-[2px] bg-slate-100 rounded-full overflow-hidden relative">
+                                    {/* Progress Line */}
+                                    <div className="w-20 h-[2px] bg-slate-200 rounded-full overflow-hidden relative">
                                         <motion.div
                                             className="absolute inset-y-0 left-0 bg-red-600"
                                             initial={false}
                                             animate={{
-                                                width: `${(currentSlide / (featuredCars.length || 1)) * 100}%`
+                                                width: `${((currentCarSlide + 1) / (featuredCars.length || 1)) * 100}%`
                                             }}
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                         />
@@ -179,10 +221,11 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                                 </div>
 
                                 <button
-                                    className="h-10 w-16 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-black transition-all shadow-sm group"
-                                    onClick={() => scroll("right")}
+                                    className="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-black transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hidden md:flex"
+                                    onClick={() => scrollCar("right")}
+                                    disabled={currentCarSlide === featuredCars.length - 1}
                                 >
-                                    <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                                    <ChevronRight className="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
@@ -190,29 +233,29 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                 </div>
             </section>
 
-            {/* Features Section: Technology Focus */}
-            <section className="py-20 md:py-32 bg-slate-950 text-white relative overflow-hidden">
+            {/* Features Section: Why Choose Us */}
+            <section className="py-12 md:py-24 bg-slate-50 text-slate-900 relative overflow-hidden">
                 <div className="container mx-auto px-6 relative z-10">
                     <motion.div
-                        className="max-w-3xl mx-auto text-center mb-24"
+                        className="max-w-3xl mx-auto text-center mb-12 md:mb-20"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={fadeInUp}
                     >
-                        <p className="text-[11px] uppercase tracking-[0.4em] text-red-600 mb-6 font-bold">
-                            Engineering Excellence
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-red-600 mb-4 font-bold">
+                            Kenapa Memilih Kami
                         </p>
-                        <h2 className="text-3xl md:text-6xl font-black mb-8 tracking-tighter uppercase leading-[1.1]">
-                            {settings?.features_title_main || "Advanced"} <span className="text-red-600">{settings?.features_title_highlight || "DNA"}</span>
+                        <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-slate-900">
+                            {settings?.features_title_main || "Solusi Kredit"} <span className="text-red-600">{settings?.features_title_highlight || "Terbaik"}</span>
                         </h2>
-                        <p className="text-white/40 text-lg md:text-xl font-medium leading-relaxed">
-                            {settings?.features_description || "Kami menghadirkan unit dengan standar inspeksi tertinggi dan fitur keselamatan canggih."}
+                        <p className="text-slate-500 text-lg leading-relaxed max-w-2xl mx-auto">
+                            {settings?.features_description || "Dapatkan mobil impian dengan proses anti ribet, harga termurah, dan pelayanan bintang lima."}
                         </p>
                     </motion.div>
 
                     <motion.div
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                        className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
@@ -227,16 +270,16 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                             return (
                                 <motion.div
                                     key={index}
-                                    className="p-12 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500 group"
+                                    className="p-6 md:p-10 rounded-2xl bg-white border border-slate-100 hover:border-red-100 hover:shadow-xl hover:shadow-red-600/5 transition-all duration-500 group"
                                     variants={fadeInUp}
                                 >
-                                    <div className="w-16 h-16 rounded-xl bg-red-600 flex items-center justify-center mb-8 shadow-2xl shadow-red-600/20 group-hover:scale-110 transition-transform duration-500">
-                                        <Icon className="h-7 w-7 text-white" />
+                                    <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center mb-6 group-hover:bg-red-600 transition-colors duration-500">
+                                        <Icon className="h-6 w-6 text-red-600 group-hover:text-white transition-colors duration-500" />
                                     </div>
-                                    <h3 className="text-2xl font-bold mb-6 uppercase tracking-tight">
+                                    <h3 className="text-xl font-bold mb-4 text-slate-900">
                                         {title}
                                     </h3>
-                                    <p className="text-white/30 text-base leading-relaxed font-medium">
+                                    <p className="text-slate-500 text-sm leading-relaxed">
                                         {desc}
                                     </p>
                                 </motion.div>
@@ -244,14 +287,17 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                         })}
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
-            {/* Why Choose Us: Elegant Visuals */}
-            <section className="py-20 md:py-32 bg-white">
+            {/* About Section: Trusted Partner */}
+            <section className="py-12 md:py-24 bg-white relative overflow-hidden">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50/50 skew-x-12 translate-x-32 -z-10" />
+
                 <div className="container mx-auto px-6">
-                    <div className="grid lg:grid-cols-2 gap-24 items-center">
+                    <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                         <motion.div
-                            className="relative aspect-square rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]"
+                            className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 group"
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
@@ -261,10 +307,12 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                                 src={settings?.about_image_url || "https://images.unsplash.com/photo-1626084209322-a5e2d14d3c90?q=80&w=2560"}
                                 alt="Honda Precision Showroom"
                                 fill
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition-transform duration-700"
                                 quality={100}
                                 sizes="(max-width: 1024px) 100vw, 50vw"
                             />
+                            {/* Sales Badge */}
+
                         </motion.div>
 
                         <motion.div
@@ -275,42 +323,57 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                             className="space-y-10"
                         >
                             <div>
-                                <p className="text-[11px] uppercase tracking-[0.4em] text-red-600 mb-6 font-bold">
-                                    {settings?.about_badge || "About AutoPremium"}
-                                </p>
-                                <h2 className="text-4xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter uppercase leading-[1.1]">
-                                    {settings?.about_title_main || "Trusted"} <br /> <span className="text-red-600">{settings?.about_title_highlight || "Quality"}</span>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="h-[2px] w-12 bg-red-600 block" />
+                                    <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500 font-bold">
+                                        {settings?.about_badge || "DEALER RESMI HONDA"}
+                                    </p>
+                                </div>
+                                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight leading-tight">
+                                    {settings?.about_title_main || "Wujudkan Mobil"} <br /> <span className="text-red-600">{settings?.about_title_highlight || "Impian Anda"}</span>
                                 </h2>
-                                <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-                                    {settings?.about_description || "Kami menyediakan unit berkualitas dengan garansi resmi, layanan purna jual terbaik, dan tim profesional."}
+                                <p className="text-slate-500 text-lg leading-relaxed border-l-4 border-red-100 pl-6">
+                                    {settings?.about_description || "Dapatkan unit Honda terbaru dengan penawaran eksklusif. Kami siap membantu proses kepemilikan mobil Anda menjadi mudah, cepat, dan menyenangkan."}
                                 </p>
                             </div>
 
-                            <div className="space-y-8">
-                                {[1, 2, 3].map((i) => {
-                                    const defaultTitle = i === 1 ? "Surgical Inspection" : i === 2 ? "Full Transparency" : "24/7 Aftersales";
-                                    const defaultDesc = i === 1 ? "Pemeriksaan menyeluruh oleh teknisi bersertifikat" : i === 2 ? "Harga jujur tanpa biaya tersembunyi" : "Dukungan penuh untuk konsultasi purna jual";
-
-                                    const title = settings?.[`about_point_${i}_title`] || defaultTitle;
-                                    const desc = settings?.[`about_point_${i}_desc`] || defaultDesc;
+                            <div className="space-y-6">
+                                {[
+                                    {
+                                        title: "Stok Terlengkap & Ready",
+                                        desc: "Pilihan unit terbanyak, warna lengkap, siap kirim hari ini ke garasi Anda."
+                                    },
+                                    {
+                                        title: "Jaminan Harga Termurah",
+                                        desc: "Nego sampai deal! Dapatkan diskon maksimal dan bonus aksesoris melimpah."
+                                    },
+                                    {
+                                        title: "Proses Kredit 100% Approve",
+                                        desc: "Dibantu sales profesional berpengalaman, data kurang kami bantu sampai lolos."
+                                    }
+                                ].map((item, i) => {
+                                    const index = i + 1;
+                                    const title = settings?.[`about_point_${index}_title`] || item.title;
+                                    const desc = settings?.[`about_point_${index}_desc`] || item.desc;
 
                                     return (
-                                        <div key={i} className="flex gap-6 group">
-                                            <div className="h-6 w-6 rounded-full bg-red-600 flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-red-200 group-hover:scale-125 transition-transform duration-300">
-                                                <div className="h-1.5 w-1.5 bg-white rounded-full" />
+                                        <div key={i} className="flex gap-5 group">
+                                            <div className="h-12 w-12 rounded-full bg-red-50 flex items-center justify-center shrink-0 group-hover:bg-red-600 transition-colors duration-300 shadow-sm group-hover:shadow-red-200">
+                                                <CheckCircle2 className="h-6 w-6 text-red-600 group-hover:text-white transition-colors duration-300" />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-slate-900 uppercase tracking-widest text-sm mb-2">{title}</h4>
-                                                <p className="text-slate-500 text-sm font-medium">{desc}</p>
+                                                <h4 className="font-bold text-slate-900 text-lg mb-1">{title}</h4>
+                                                <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            <Link href="/tentang">
-                                <Button className="bg-slate-900 hover:bg-red-600 h-16 px-12 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors duration-500">
-                                    Read More
+                            <Link href="/mobil">
+                                <Button className="bg-red-600 hover:bg-red-700 text-white h-14 px-10 rounded-full font-bold text-sm transition-all duration-300 shadow-xl shadow-red-600/20 hover:shadow-red-600/40">
+                                    Lihat Unit Ready Stock
+                                    <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </Link>
                         </motion.div>
@@ -318,140 +381,234 @@ export default function HomePageClient({ featuredCars, settings, testimonials }:
                 </div>
             </section>
 
+            {/* Video Highlight: Premium Experience */}
+            <VideoSection
+                url={settings?.home_video_url}
+                titleMain={settings?.home_video_title_main}
+                titleHighlight={settings?.home_video_title_highlight}
+                description={settings?.home_video_description}
+            />
+
             {/* Testimonials Slider: Happy Customers */}
-            {testimonials && testimonials.length > 0 && (
-                <section className="py-20 md:py-32 bg-slate-50">
-                    <div className="container mx-auto px-6">
+            {
+                testimonials && testimonials.length > 0 && (
+                    <section className="py-12 md:py-32 bg-slate-50">
+                        <div className="container mx-auto px-6">
+                            <motion.div
+                                className="text-center mb-10 md:mb-16"
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={fadeInUp}
+                            >
+                                <p className="text-[10px] uppercase tracking-[0.3em] text-red-600 mb-4 font-bold">
+                                    Bukti Kepuasan Pelanggan
+                                </p>
+                                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+                                    Ribuan <span className="text-red-600">Cerita Sukses</span>
+                                </h2>
+                                <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                                    Lihat senyum bahagia mereka yang telah mewujudkan mobil impiannya. Proses mudah, cepat, dan transparan. Giliran Anda selanjutnya!
+                                </p>
+                            </motion.div>
+
+                            <div className="relative group">
+                                {/* Navigation Buttons - Hidden on Mobile for cleaner look, swipe is natural */}
+                                <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-20 pointer-events-none flex justify-between px-2 md:-mx-4">
+                                    <Button
+                                        onClick={() => scrollTestimonial("left")}
+                                        variant="outline"
+                                        size="icon"
+                                        className="hidden md:flex h-12 w-12 rounded-full bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl pointer-events-auto opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-600 hover:text-white"
+                                    >
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </Button>
+                                    <Button
+                                        onClick={() => scrollTestimonial("right")}
+                                        variant="outline"
+                                        size="icon"
+                                        className="hidden md:flex h-12 w-12 rounded-full bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl pointer-events-auto opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-600 hover:text-white"
+                                    >
+                                        <ChevronRight className="h-6 w-6" />
+                                    </Button>
+                                </div>
+
+                                <motion.div
+                                    ref={testimonialRef}
+                                    className="flex gap-4 md:gap-6 overflow-x-auto pb-8 md:pb-10 scrollbar-hide snap-x no-scrollbar pt-4 -mx-4 px-4"
+                                    initial="hidden"
+                                    whileInView="visible"
+                                    viewport={{ once: true }}
+                                    variants={staggerContainer}
+                                >
+                                    {testimonials.map((item) => (
+                                        <motion.div
+                                            key={item.id}
+                                            className="min-w-[80vw] md:min-w-[400px] snap-center aspect-[4/5] relative rounded-2xl overflow-hidden group shadow-lg md:shadow-xl"
+                                            variants={fadeInUp}
+                                        >
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name || "Testimonial"}
+                                                fill
+                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                                sizes="(max-width: 768px) 300px, 400px"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-90 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 transform translate-y-0 md:translate-y-4 group-hover:translate-y-0 transition-transform duration-500 text-white">
+                                                <p className="font-bold text-xl mb-2 text-white uppercase tracking-tighter">{item.name || "Happy Owner"}</p>
+                                                <p className="text-xs text-white/80 md:text-white/60 font-medium leading-relaxed italic">{item.text || "Terima kasih atas kepercayaannya!"}</p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </div>
+
+                            <motion.div
+                                className="mt-8 md:mt-16 text-center"
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5 }}
+                            >
+                                <Link href="/testimoni">
+                                    <Button
+                                        variant="outline"
+                                        className="border-slate-200 hover:border-red-600 font-bold h-12 px-8 rounded-xl text-[10px] uppercase tracking-widest transition-all duration-300 w-full md:w-auto"
+                                    >
+                                        Lihat Galeri Serah Terima
+                                        <ArrowRight className="ml-2 h-3 w-3" />
+                                    </Button>
+                                </Link>
+                            </motion.div>
+                        </div>
+                    </section>
+                )
+            }
+
+            {/* Promo Section: Deals & Offers */}
+            <section className="py-12 md:py-24 bg-white relative overflow-hidden">
+                <div className="container mx-auto px-6 relative z-10">
+                    <motion.div
+                        className="text-center mb-10 md:mb-16"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeInUp}
+                    >
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-red-600 mb-4 font-bold">
+                            {settings?.promo_badge || "Penawaran Spesial"}
+                        </p>
+                        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+                            {settings?.promo_title_main || "Promo"} <span className="text-red-600">{settings?.promo_title_highlight || "Terbatas"}</span>
+                        </h2>
+                        <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                            {settings?.promo_description || "Dapatkan penawaran terbaik bulan ini. Stok terbatas, segera hubungi kami sebelum kehabisan."}
+                        </p>
+                    </motion.div>
+
+                    {promotions && promotions.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-20">
+                            {promotions.map((promo, index) => (
+                                <motion.div
+                                    key={promo.id}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="bg-slate-50 rounded-3xl overflow-hidden group hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 border border-slate-100 flex flex-col"
+                                >
+                                    <div className="relative aspect-[4/3] overflow-hidden">
+                                        <Image
+                                            src={promo.image || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070"}
+                                            alt={promo.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
+                                        {promo.tag && (
+                                            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/50 shadow-sm">
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-red-600">
+                                                    {promo.tag}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {promo.period && (
+                                            <div className="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">
+                                                <p className="text-[10px] font-bold text-white">
+                                                    {promo.period}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="p-6 md:p-8 flex-1 flex flex-col">
+                                        <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-red-600 transition-colors duration-300">
+                                            {promo.title}
+                                        </h3>
+                                        <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3 text-justify flex-1">
+                                            {promo.description}
+                                        </p>
+                                        <Link href={promo.link || `https://wa.me/${settings?.whatsapp_number}?text=Halo, saya tertarik dengan promo: ${promo.title}`} target="_blank" className="mt-auto">
+                                            <Button className="w-full bg-slate-200 hover:bg-slate-900 text-slate-900 hover:text-white font-bold h-12 rounded-xl transition-all duration-300">
+                                                Dapatkan Promo Ini
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
                         <motion.div
-                            className="text-center mb-16"
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
                             variants={fadeInUp}
+                            className="bg-slate-50 rounded-3xl p-12 text-center border border-dashed border-slate-200 mb-20 max-w-2xl mx-auto"
                         >
-                            <p className="text-[11px] uppercase tracking-[0.4em] text-red-600 mb-6 font-bold">
-                                Happy Customers
-                            </p>
-                            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter uppercase leading-[1.1]">
-                                <span className="text-red-600">Momen</span> Penyerahan Unit
-                            </h2>
-                            <p className="text-slate-500 text-sm font-medium uppercase tracking-widest">
-                                Kebahagiaan konsumen bersama AutoPremium
-                            </p>
-                        </motion.div>
-
-                        <div className="relative group">
-                            {/* Navigation Buttons */}
-                            <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-20 pointer-events-none flex justify-between px-2 md:-mx-4">
-                                <Button
-                                    onClick={() => scroll("left")}
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl pointer-events-auto opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-600 hover:text-white"
-                                >
-                                    <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
-                                </Button>
-                                <Button
-                                    onClick={() => scroll("right")}
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl pointer-events-auto opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-600 hover:text-white"
-                                >
-                                    <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
-                                </Button>
+                            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <span className="text-2xl">🎁</span>
                             </div>
-
-                            <motion.div
-                                ref={scrollContainerRef}
-                                className="flex gap-6 overflow-x-auto pb-10 scrollbar-hide snap-x no-scrollbar pt-4"
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                variants={staggerContainer}
-                            >
-                                {testimonials.map((item) => (
-                                    <motion.div
-                                        key={item.id}
-                                        className="min-w-[300px] md:min-w-[400px] snap-center aspect-[4/5] relative rounded-2xl overflow-hidden group shadow-xl"
-                                        variants={fadeInUp}
-                                    >
-                                        <Image
-                                            src={item.image}
-                                            alt={item.name || "Testimonial"}
-                                            fill
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            sizes="(max-width: 768px) 300px, 400px"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                        <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 text-white">
-                                            <p className="font-bold text-xl mb-2 text-white uppercase tracking-tighter">{item.name || "Happy Owner"}</p>
-                                            <p className="text-xs text-white/60 font-medium leading-relaxed italic">{item.text || "Terima kasih atas kepercayaannya!"}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </motion.div>
-                        </div>
-
-                        <motion.div
-                            className="mt-16 text-center"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <Link href="/testimoni">
-                                <Button
-                                    variant="outline"
-                                    className="border-slate-200 hover:border-red-600 font-bold h-12 px-8 rounded-xl text-[10px] uppercase tracking-widest transition-all duration-300"
-                                >
-                                    Lihat Semua Momen Bahagia
-                                    <ArrowRight className="ml-2 h-3 w-3" />
-                                </Button>
-                            </Link>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2">Belum Ada Promo Saat Ini</h3>
+                            <p className="text-slate-500 text-sm">Nantikan penawaran menarik kami selanjutnya. Hubungi kami untuk info stok terbaru.</p>
                         </motion.div>
-                    </div>
-                </section>
-            )}
+                    )}
 
-            {/* CTA Section: Intense Finish */}
-            <section className="pb-20 md:pb-32 px-6">
-                <div className="container mx-auto">
+                    {/* Secondary Contact CTA */}
                     <motion.div
-                        className="bg-slate-950 rounded-2xl p-10 md:p-32 text-center text-white relative overflow-hidden"
+                        className="bg-slate-900 rounded-3xl p-8 md:p-16 relative overflow-hidden text-center shadow-2xl shadow-slate-900/20"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={scaleIn}
                     >
-                        <div className="max-w-3xl mx-auto relative z-10">
-                            <p className="text-red-600 text-[11px] uppercase tracking-[0.4em] mb-10 font-bold">
-                                Final Step
-                            </p>
-                            <h2 className="text-4xl md:text-8xl font-black mb-10 tracking-tighter uppercase leading-[1.1]">
-                                {settings?.cta_title_main || "DRIVE"} <br /> <span className="text-red-600">{settings?.cta_title_highlight || "The Power"}</span>
-                            </h2>
-                            <p className="text-white/40 text-lg md:text-xl mb-16 font-medium">
-                                {settings?.cta_description || "Tim spesialis kami siap membantu Anda menemukan model yang sempurna sesuai kebutuhan dan budget Anda."}
-                            </p>
+                        {/* Abstract BG */}
+                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-red-600/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-600/10 rounded-full blur-[80px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                <Link href={`https://wa.me/${settings?.whatsapp_number || "6281234567890"}`} target="_blank">
-                                    <Button className="bg-red-600 hover:bg-red-700 h-16 px-14 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-xl shadow-red-600/10">
-                                        {settings?.cta_button_primary || "WhatsApp Us"}
+                        <div className="relative z-10 max-w-2xl mx-auto">
+                            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">{settings?.cta_title || "Butuh Simulasi Kredit?"}</h3>
+                            <p className="text-slate-400 mb-10 leading-relaxed text-sm md:text-base">
+                                {settings?.cta_description || "Tim spesialis kami siap membantu menghitungkan skema kredit terbaik yang sesuai dengan budget Anda. Konsultasi gratis tanpa syarat."}
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link href={`https://wa.me/${settings?.whatsapp_number || "6285863162206"}`} target="_blank">
+                                    <Button className="bg-red-600 hover:bg-red-700 text-white h-14 px-10 rounded-full font-bold text-sm tracking-widest transition-all shadow-lg shadow-red-600/20 w-full sm:w-auto">
+                                        {settings?.cta_button_primary || "Hubungi Sales"}
                                     </Button>
                                 </Link>
                                 <Link href="/mobil">
-                                    <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 h-16 px-14 rounded-xl font-bold text-xs uppercase tracking-widest text-white">
-                                        Catalog
+                                    <Button className="bg-white hover:bg-slate-200 text-slate-900 h-14 px-10 rounded-full font-bold text-sm tracking-widest transition-all shadow-lg shadow-white/5 w-full sm:w-auto">
+                                        {settings?.cta_button_secondary || "Lihat Unit Ready"}
                                     </Button>
                                 </Link>
                             </div>
                         </div>
-
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
                     </motion.div>
                 </div>
             </section>
-        </div>
+            {promotions && promotions.length > 0 && (
+                <PromoPopup promotions={promotions} whatsappNumber={settings?.whatsapp_number} />
+            )}
+        </div >
     );
 }

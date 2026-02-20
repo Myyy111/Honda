@@ -5,7 +5,7 @@ generator client {
 
 // NOTE: Change to "postgresql" and update DATABASE_URL in .env when ready to deploy
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -22,19 +22,21 @@ model Car {
   name         String
   slug         String       @unique
   brand        String       @default("Honda")
-  price        Float        // Starting OTR Price
+  price        Int          // Starting OTR Price
   status       String       @default("Ready Stock") // Ready / Indent
   badge        String?      // New / Promo / Best Seller
   thumbnail    String
   gallery      String       // Store as JSON string since SQLite doesn't support arrays
+  interiorGallery String?   // Store as JSON string for interior photos
   videoUrl     String?      // YouTube Link
   catalogUrl   String?      // E-Katalog Link (e.g., Google Drive)
   description  String       // Rich Text
-  specs        String?      // JSON string for specs
-  colors       String?      // JSON string for color list
+  specDefinitions String?    // JSON string for spec labels/order
+  colors       String?      // Master color registry
   isActive     Boolean      @default(true)
   isFeatured   Boolean      @default(false)
   variants     CarVariant[]
+  leads        LeadLog[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -43,7 +45,9 @@ model CarVariant {
   id      String @id @default(cuid())
   carId   String
   name    String // e.g., 1.5 Turbo RS
-  price   Float  // Variant OTR Price
+  price   Int    // Variant OTR Price
+  specs   String? // JSON string for variant-specific spec overrides
+  colors  String? // JSON string for selected color names
   car     Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
 }
 
@@ -73,6 +77,8 @@ model LeadLog {
   salesId   String?
   type      String   @default("WHATSAPP_CLICK")
   createdAt DateTime @default(now())
+  
+  car       Car?     @relation(fields: [carId], references: [id])
 }
 
 model Setting {
